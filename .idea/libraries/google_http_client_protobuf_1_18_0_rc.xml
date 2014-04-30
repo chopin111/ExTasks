@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="google-http-client-protobuf-1.18.0-rc">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-protobuf/1.18.0-rc/99047e4c7d122ac651553cc8b15df6bdece12fd0/google-http-client-protobuf-1.18.0-rc.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-protobuf/1.18.0-rc/b90a4a4092480ab11f8a20b3e06ab38bfb782ed5/google-http-client-protobuf-1.18.0-rc-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

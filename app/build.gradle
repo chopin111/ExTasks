@@ -34,5 +34,6 @@ dependencies {
     compile 'org.codehaus.jackson:jackson-core-asl:1.9.11'
     compile 'com.google.oauth-client:google-oauth-client:1.18.0-rc'
     compile 'com.google.android.gms:play-services:4.3.23'
+    compile 'com.google.api.client:google-api-client:1.4.0-alpha'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

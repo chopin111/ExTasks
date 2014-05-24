@@ -20,11 +20,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/dependencies'
+        exclude 'META-INF/notice'
+        exclude 'META-INF/license'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/notice.txt'
+    }
+
 }
 
 dependencies {
+    //compile 'com.google.apis:google-api-services-tasks:v1-rev29-1.18.0-rc'
+//    compile 'com.google.api-client:google-api-client-android:1.18.0-rc'
+//    compile 'com.google.api.client:google-api-client-googleapis:1.4.0-alpha'
+//    compile 'com.google.http-client:google-http-client-gson:1.18.0-rc'
+//    compile 'com.google.http-client:google-http-client-jackson:1.15.0-rc'
+    //compile 'com.google.android.gms:play-services:4.3.23'
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile('org.springframework.android:spring-android-auth:1.0.1.RELEASE'){
+        exclude group :'org.springframework', module: 'spring-core'
+    }
+    compile 'org.springframework.android:spring-android-core:1.0.1.RELEASE'
+//    compile('com.google.apis:google-api-services-tasks:v1-rev32-1.18.0-rc') {
+//        exclude group: 'com.google.api.client'
+//    }
+
     compile 'com.google.apis:google-api-services-tasks:v1-rev29-1.18.0-rc'
     compile 'com.google.api-client:google-api-client-android:1.18.0-rc'
     compile 'com.google.http-client:google-http-client-gson:1.18.0-rc'
     compile 'com.google.android.gms:play-services:4.3.23'
+
 }

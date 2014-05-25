@@ -30,6 +30,7 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
+    static final int REQUEST_AUTHORIZATION = 1;
     static final String TAG = MainActivity.class.getSimpleName();
     boolean clicked = false;
     private static String PREF_ACCOUNT_NAME;
@@ -165,7 +166,7 @@ public class MainActivity extends Activity {
                 GoogleAccountCredential.usingOAuth2(this, Collections.singleton(TasksScopes.TASKS));
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
         //credential.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null));
-        credential.setSelectedAccountName("jakublasisz@gmail.com");
+        credential.setSelectedAccountName("magicmacko@gmail.com");
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {

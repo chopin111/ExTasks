@@ -25,8 +25,8 @@ public class GoogleAsyncTask extends AsyncTask<String, String, String> {
         //https://www.googleapis.com/tasks/v1/lists/MDg1MTIwOTEyNzA0NTYwMjY2ODU6MDow/tasks
         //String url = "https://www.googleapis.com/tasks/v1/lists/{list}/tasks";
         String authUrl = "https://www.googleapis.com/auth/tasks";
-        String username = "129983892196-ahd​em6mt5pau5sufj9o​c1rocngqmr4e6.ap​ps.googleusercon​tent.com";
-        String password = "AIzaSyAN01Uou4oW​pt6EB57Vr4eof4Wb​DZ3RJs4";
+        String username = "magicmacko@gmail.com";//"129983892196-ahdem6mt5pau5sufj9oc1rocngqmr4e6.apps.googleusercontent.com";
+        String password = "2D:BA:26:F3:CE:69:92:06:EA:AF:16:6E:C3:3B:87:7F:9A:BE:A7:F2;pl.edu.agh.pp.extasks.app";//"AIzaSyAPusShJNzoA93Y23w5hQY-fwH2m9Jy-wc";
         HttpAuthentication authHeader = new HttpBasicAuthentication(username, password);
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);

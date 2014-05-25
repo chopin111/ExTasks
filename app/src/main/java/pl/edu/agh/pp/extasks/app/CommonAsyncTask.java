@@ -39,16 +39,15 @@ abstract class CommonAsyncTask extends AsyncTask<Void, Void, Boolean> {
             doInBackground();
             return true;
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
-            Log.d(MainActivity.TAG, "GPSAIOE");
-//            activity.showGooglePlayServicesAvailabilityErrorDialog(
-//                    availabilityException.getConnectionStatusCode());
+            Log.d("asdf", "kuuuuupaaaa0");
+            //activity.showGooglePlayServicesAvailabilityErrorDialog(
+                    //availabilityException.getConnectionStatusCode());
         } catch (UserRecoverableAuthIOException userRecoverableException) {
-            Log.d(MainActivity.TAG, "URAIOE");
-            //activity.startActivityForResult(
-             //       userRecoverableException.getIntent(), TasksSample.REQUEST_AUTHORIZATION);
+            Log.d("asdf", "kuuuuupaaaa");
+            activity.startActivityForResult(
+                    userRecoverableException.getIntent(), MainActivity.REQUEST_AUTHORIZATION);
         } catch (IOException e) {
-            Log.d(MainActivity.TAG, "IO");
-            //Utils.logAndShow(activity, TasksSample.TAG, e);
+            Utils.logAndShow(activity, MainActivity.TAG, e);
         }
         return false;
     }

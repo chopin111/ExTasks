@@ -2,6 +2,9 @@ apply plugin: 'android'
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://raw.github.com/joelso/joelso-mvn-repo/master/snapshots/"
+    }
 }
 
 android {
@@ -37,7 +40,7 @@ dependencies {
 //    compile 'com.google.api.client:google-api-client-googleapis:1.4.0-alpha'
 //    compile 'com.google.http-client:google-http-client-gson:1.18.0-rc'
 //    compile 'com.google.http-client:google-http-client-jackson:1.15.0-rc'
-    //compile 'com.google.android.gms:play-services:4.3.23'
+//    compile 'com.google.android.gms:play-services:4.3.23'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
     compile('org.springframework.android:spring-android-auth:1.0.1.RELEASE'){
         exclude group :'org.springframework', module: 'spring-core'
@@ -50,6 +53,8 @@ dependencies {
     compile 'com.google.apis:google-api-services-tasks:v1-rev29-1.18.0-rc'
     compile 'com.google.api-client:google-api-client-android:1.18.0-rc'
     compile 'com.google.http-client:google-http-client-gson:1.18.0-rc'
-    compile 'com.google.android.gms:play-services:4.3.23'
+    compile 'com.google.android.gms:play-services:4.4.52'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'org.trello4j:trello4j:1.0-SNAPSHOT'
 
 }

@@ -1,40 +1,51 @@
 package pl.edu.agh.pp.extasks.app;
 
-import com.google.api.services.tasks.model.Task;
+import android.os.AsyncTask;
+import android.util.Log;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.trello4j.Trello;
+import org.trello4j.TrelloImpl;
+import org.trello4j.model.Action;
+import org.trello4j.model.Board;
+import org.trello4j.model.Card;
+import org.trello4j.model.Checklist;
+import org.trello4j.model.List;
 
 /**
-* Asynchronously load the tasks.
-*
-* @author Yaniv Inbar
-*/
-class MyAsyncTask extends CommonAsyncTask {
-
-    List<String> result = new ArrayList<String>();
-
-    MyAsyncTask(MainActivity tasksSample) {
-        super(tasksSample);
-    }
-
+ * Created by Kuba on 2014-05-25.
+ */
+public class MyAsyncTask extends AsyncTask<String, String, String> {
     @Override
-    protected void doInBackground() throws IOException {
-        //List<String> result = new ArrayList<String>();
-        List<Task> tasks =
-                client.tasks().list("@default").setFields("items/title").execute().getItems();
-        if (tasks != null) {
-            for (Task task : tasks) {
-                result.add(task.getTitle());
-            }
-        } else {
-            result.add("No tasks.");
+    protected String doInBackground(String... strings) {
+        Trello trello = new TrelloImpl("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+        Board board = trello.getBoard("533ed8229e6d028403feaac4");
+        java.util.List<Card> list = trello.getCardsByBoard("533ed8229e6d028403feaac4");
+        java.util.List<List> llist = trello.getListByBoard("533ed8229e6d028403feaac4");
+        Log.d(MainActivity.TAG, "boardName");
+        Log.d(MainActivity.TAG, board.getName());
+        Log.d(MainActivity.TAG, "cardNames");
+        for (Card c : list) {
+            Log.d(MainActivity.TAG, c.getName());
         }
-        activity.tasksList = result;
-    }
-
-    static void run(MainActivity tasksSample) {
-        new MyAsyncTask(tasksSample).execute();
+        Card card = list.get(0);
+        Log.d(MainActivity.TAG, "listNames");
+        for (List l : llist) {
+            Log.d(MainActivity.TAG, l.getName());
+        }
+        List first = llist.get(0);
+        java.util.List<Card> clist = trello.getCardsByList(first.getId());
+        Log.d(MainActivity.TAG, "cardNames");
+        for (Card c : clist) {
+            Log.d(MainActivity.TAG, c.getName());
+        }
+        java.util.List<Checklist> cllist = trello.getChecklistByBoard("533ed8229e6d028403feaac4");
+        for (Checklist cl : cllist) {
+            String name = cl.getName();
+            Log.d(MainActivity.TAG, name);
+            for (Checklist.CheckItem item : cl.getCheckItems()) {
+                Log.d(MainActivity.TAG, item.getName());
+            }
+        }
+        return "";
     }
 }

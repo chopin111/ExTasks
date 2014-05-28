@@ -14,7 +14,8 @@
      limitations under the License.
 -->
 
-<resources>
-    <dimen name="frag_rounding_radius">20dp</dimen>
-    <dimen name="progress_action_padding">8dp</dimen>
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
+	<item android:state_pressed="true" android:drawable="@drawable/selected_background" />
+	<item android:drawable="@android:color/transparent" />
+</selector>

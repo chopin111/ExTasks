@@ -57,4 +57,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'org.trello4j:trello4j:1.0-SNAPSHOT'
 
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.android.support:support-v4:19.1.0'
+
 }

@@ -14,7 +14,6 @@
      limitations under the License.
 -->
 
-<resources>
-    <dimen name="frag_rounding_radius">20dp</dimen>
-    <dimen name="progress_action_padding">8dp</dimen>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/android_green" />
+</shape>

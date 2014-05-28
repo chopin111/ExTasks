@@ -5,11 +5,12 @@ import android.util.Log;
 
 import org.trello4j.Trello;
 import org.trello4j.TrelloImpl;
-import org.trello4j.model.Action;
 import org.trello4j.model.Board;
 import org.trello4j.model.Card;
 import org.trello4j.model.Checklist;
 import org.trello4j.model.List;
+
+import java.util.ArrayList;
 
 /**
  * Created by Kuba on 2014-05-25.
@@ -21,12 +22,34 @@ public class MyAsyncTask extends AsyncTask<String, String, String> {
         Board board = trello.getBoard("533ed8229e6d028403feaac4");
         java.util.List<Card> list = trello.getCardsByBoard("533ed8229e6d028403feaac4");
         java.util.List<List> llist = trello.getListByBoard("533ed8229e6d028403feaac4");
+
+        ArrayList<String> cardsIdsList = new ArrayList<String>();
+
         Log.d(MainActivity.TAG, "boardName");
         Log.d(MainActivity.TAG, board.getName());
         Log.d(MainActivity.TAG, "cardNames");
+
+
         for (Card c : list) {
             Log.d(MainActivity.TAG, c.getName());
+
+            MainActivity.listsNames.add(c.getName());
+            cardsIdsList.add(c.getId());
+
         }
+        ArrayList<String> tasksList = new ArrayList<String>();
+
+        for (String cardId : cardsIdsList) {
+            java.util.List<Checklist> checklists = trello.getChecklistByCard(cardId);
+            for (Checklist checklist : checklists) {
+                for (Checklist.CheckItem item : checklist.getCheckItems()) {
+                    tasksList.add(item.getName());
+                }
+            }
+            MainActivity.tasksLists.add(tasksList);
+            tasksList = new ArrayList<String>();
+        }
+
         Card card = list.get(0);
         Log.d(MainActivity.TAG, "listNames");
         for (List l : llist) {
@@ -41,11 +64,12 @@ public class MyAsyncTask extends AsyncTask<String, String, String> {
         java.util.List<Checklist> cllist = trello.getChecklistByBoard("533ed8229e6d028403feaac4");
         for (Checklist cl : cllist) {
             String name = cl.getName();
-            Log.d(MainActivity.TAG, name);
+            Log.d(MainActivity.TAG, "name: " + name);
             for (Checklist.CheckItem item : cl.getCheckItems()) {
-                Log.d(MainActivity.TAG, item.getName());
+                Log.d(MainActivity.TAG, "getName: " + item.getName());
             }
         }
+
         return "";
     }
 }

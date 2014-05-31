@@ -12,20 +12,26 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends SherlockFragmentActivity implements ActionBar.TabListener {
+import pl.edu.agh.pp.extasks.framework.Note;
+import pl.edu.agh.pp.extasks.framework.NoteList;
+import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
-    static final String TAG = MainActivity.class.getSimpleName();
+public class ExTasksActivity extends SherlockFragmentActivity implements ActionBar.TabListener {
 
-    static ArrayList<String> listsNames = new ArrayList<String>();
-    static ArrayList<ArrayList<String>> tasksLists = new ArrayList<ArrayList<String>>();
+    static final String TAG = ExTasksActivity.class.getSimpleName();
 
     private final Handler handler = new Handler();
+    private List<NoteList> noteLists = new LinkedList<NoteList>();
     private boolean useLogo = false;
     private boolean showHomeUp = false;
 
+    public void updateNoteList(List<NoteList> newList) {
+        noteLists = newList;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         ab.setDisplayUseLogoEnabled(useLogo);
 
         // set up tabs nav
-        if (listsNames.size() == 0) {
+        if (noteLists.size() == 0) {
             ab.addTab(ab.newTab().setText("Empty tab").setTabListener(this));
         }
 
@@ -67,7 +73,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         getSupportMenuInflater().inflate(R.menu.main_menu, menu);
 
         // set up a listener for the refresh item
-        final MenuItem refresh = (MenuItem) menu.findItem(R.id.menu_refresh);
+        final MenuItem refresh = menu.findItem(R.id.menu_refresh);
         refresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             // on selecting show progress spinner for 1s
             public boolean onMenuItemClick(MenuItem item) {
@@ -91,7 +97,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 item.setActionView(R.layout.indeterminate_progress_action);
                 String value;
                 try {
-                    value = new MyAsyncTask().execute().get();
+                    value = new ConnectionAsyncTask(this, new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a")).execute().get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     return false;
@@ -104,8 +110,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     refreshTabs();
                     refreshTextView();
                     return true;
-                }
-                else
+                } else
                     return false;
             default:
                 return super.onOptionsItemSelected(item);
@@ -113,28 +118,21 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 
     private void refreshTextView() {
-        Log.d(TAG, "refreshTextView");
         TextView tv = (TextView) findViewById(R.id.tasksList);
         int whichNo = getActionBar().getSelectedTab().getPosition();
-        boolean first = true;
-        ArrayList<String> tasksList = tasksLists.get(whichNo);
-        for (String task : tasksList) {
-            if (first) {
-                tv.setText(task + "\n");
-                first = false;
-            } else
-                tv.append(task + "\n");
+        List<Note> taskList = noteLists.get(whichNo).getNotes();
+        tv.setText("");
+        for (Note n : taskList) {
+            tv.append(n.getText() + "\n");
         }
     }
 
     private void refreshTabs() {
         ActionBar ab = getSupportActionBar();
-        int size = listsNames.size();
+        int size = noteLists.size();
+        ab.removeAllTabs();
         for (int i = 0; i < size; i++) {
-            if (i < ab.getTabCount()) {
-                ab.getTabAt(i).setText(listsNames.get(i)).setTabListener(this);
-            } else
-                ab.addTab(ab.newTab().setText(listsNames.get(i)).setTabListener(this));
+            ab.addTab(ab.newTab().setText(noteLists.get(i).getName()).setTabListener(this));
         }
     }
 
@@ -147,7 +145,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        if (listsNames.size() > 0) {
+        if (noteLists.size() > 0) {
             refreshTextView();
         }
     }

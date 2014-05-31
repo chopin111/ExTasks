@@ -28,7 +28,7 @@
         </provider>-->
 
         <activity
-            android:name="pl.edu.agh.pp.extasks.app.MainActivity"
+            android:name=".ExTasksActivity"
             android:label="Ex-tasks"
             android:theme="@style/Theme.Sherlock">
             <intent-filter>

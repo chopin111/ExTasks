@@ -11,16 +11,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**Implementation of a provider for Trello communication
+ * @author Jakub Lasisz
+ * @author Maciej Sipko
+ */
 public class TrelloProvider implements TasksProvider {
-
+    /**
+     * Wrapper of the trello REST API
+     */
     private Trello trelloManager;
+    /**
+     * List of trello boards
+     */
     private List<Board> boards = new LinkedList<Board>();
     private Map<String, List<org.trello4j.model.List>> listsByBoards = new HashMap<String, List<org.trello4j.model.List>>();
     private Map<String, List<Card>> cardsByLists = new HashMap<String, List<Card>>();
     private Map<String, List<Checklist>> checklistByCard = new HashMap<String, List<Checklist>>();
     private Map<String, List<Checklist.CheckItem>> checkitemByChecklist = new HashMap<String, List<Checklist.CheckItem>>();
+    /**
+     * List of note lists on every board
+     */
     private List<NoteList> noteLists = new LinkedList<NoteList>();
+    /**
+     * Key representing a user account
+     */
     private final String key;
+    /**
+     * Token corresponding to the key
+     */
     private final String token;
 
     public TrelloProvider(String key, String token) {

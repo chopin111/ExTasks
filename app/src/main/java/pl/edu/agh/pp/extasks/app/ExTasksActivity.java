@@ -20,6 +20,10 @@ import pl.edu.agh.pp.extasks.framework.Note;
 import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
+/**Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
+ * @author Jakub Lasisz
+ * @author Maciej Sipko
+ */
 public class ExTasksActivity extends SherlockFragmentActivity implements ActionBar.TabListener {
 
     static final String TAG = ExTasksActivity.class.getSimpleName();
@@ -29,6 +33,10 @@ public class ExTasksActivity extends SherlockFragmentActivity implements ActionB
     private boolean useLogo = false;
     private boolean showHomeUp = false;
 
+    /**
+     * Updates the current note list, used by ConnectionAsyncTask class.
+     * @param newList The new note list
+     */
     public void updateNoteList(List<NoteList> newList) {
         noteLists = newList;
     }
@@ -117,6 +125,9 @@ public class ExTasksActivity extends SherlockFragmentActivity implements ActionB
         }
     }
 
+    /**
+     * Refreshes currently selected tab.
+     */
     private void refreshTextView() {
         TextView tv = (TextView) findViewById(R.id.tasksList);
         int whichNo = getActionBar().getSelectedTab().getPosition();
@@ -127,6 +138,9 @@ public class ExTasksActivity extends SherlockFragmentActivity implements ActionB
         }
     }
 
+    /**
+     * Refreshes all tabs in activity.
+     */
     private void refreshTabs() {
         ActionBar ab = getSupportActionBar();
         int size = noteLists.size();
@@ -136,6 +150,9 @@ public class ExTasksActivity extends SherlockFragmentActivity implements ActionB
         }
     }
 
+    /**
+     * Makes a tab navigation bar visible.
+     */
     private void showTabsNav() {
         ActionBar ab = getSupportActionBar();
         if (ab.getNavigationMode() != ActionBar.NAVIGATION_MODE_TABS) {

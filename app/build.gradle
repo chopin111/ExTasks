@@ -48,6 +48,12 @@ dependencies {
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.android.support:support-v4:19.1.0'
 
+//    androidTestCompile "org.mockito:mockito-core:1.9.5"
+    compile "org.mockito:mockito-core:1.9.5"
+//    compile "org.mockito:mockito-all:1.9.5"
+    compile 'com.google.dexmaker:dexmaker:1.0'
+    compile 'com.google.dexmaker:dexmaker-mockito:1.0'
+
 //    androidTestCompile 'junit:junit:3.8.1'
 //    androidTestCompile 'velocity:velocity-dep:1.4'
 //    androidTestCompile 'org.uncommons:reportng:1.1.4'

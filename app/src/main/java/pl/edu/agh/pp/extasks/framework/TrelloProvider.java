@@ -35,16 +35,30 @@ public class TrelloProvider implements TasksProvider {
     /**
      * Key representing a user account
      */
-    private final String key;
+    private String key;
     /**
      * Token corresponding to the key
      */
-    private final String token;
+    private String token;
+
+    public TrelloProvider(){}
 
     public TrelloProvider(String key, String token) {
         this.key = key;
         this.token = token;
         trelloManager = new TrelloImpl(key, token);
+    }
+
+    public void setProvider(Trello provider) {
+        this.trelloManager = provider;
+    }
+
+    public void setToken(String newToken) {
+        this.token = newToken;
+    }
+
+    public void setKey(String newKey) {
+        this.key = newKey;
     }
 
     @Override

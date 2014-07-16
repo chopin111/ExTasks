@@ -5,7 +5,6 @@ package pl.edu.agh.pp.extasks.framework;
  *
  * @author Jakub Lasisz
  * @author Maciej Sipko
- *
  */
 public class Note {
     /**
@@ -22,18 +21,10 @@ public class Note {
         this.date = date;
     }
 
-    /**
-     *
-     * @return Note contents.
-     */
     public String getText() {
         return text;
     }
 
-    /**
-     *
-     * @return Note creation date.
-     */
     public String getDate() {
         return date;
     }

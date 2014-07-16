@@ -11,7 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**Implementation of a provider for Trello communication
+/**
+ * Implementation of a provider for Trello communication
+ *
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
@@ -28,9 +30,6 @@ public class TrelloProvider implements TasksProvider {
     private Map<String, List<Card>> cardsByLists = new HashMap<String, List<Card>>();
     private Map<String, List<Checklist>> checklistByCard = new HashMap<String, List<Checklist>>();
     private Map<String, List<Checklist.CheckItem>> checkitemByChecklist = new HashMap<String, List<Checklist.CheckItem>>();
-    /**
-     * List of note lists on every board
-     */
     private List<NoteList> noteLists = new LinkedList<NoteList>();
     /**
      * Key representing a user account
@@ -41,7 +40,8 @@ public class TrelloProvider implements TasksProvider {
      */
     private String token;
 
-    public TrelloProvider(){}
+    public TrelloProvider() {
+    }
 
     public TrelloProvider(String key, String token) {
         this.key = key;
@@ -49,8 +49,8 @@ public class TrelloProvider implements TasksProvider {
         trelloManager = new TrelloImpl(key, token);
     }
 
-    public void setProvider(Trello provider) {
-        this.trelloManager = provider;
+    public void setTrelloManager(Trello trelloManager) {
+        this.trelloManager = trelloManager;
     }
 
     public void setToken(String newToken) {

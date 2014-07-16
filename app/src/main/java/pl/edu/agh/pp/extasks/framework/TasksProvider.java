@@ -2,7 +2,8 @@ package pl.edu.agh.pp.extasks.framework;
 
 import java.util.List;
 
-/**Common interface for all different providers.
+/**
+ * Common interface for all different providers.
  *
  * @author Jakub Lasisz
  * @author Maciej Sipko
@@ -10,6 +11,7 @@ import java.util.List;
 public interface TasksProvider {
     /**
      * Returns all the notes as a list of note lists.
+     *
      * @return list of notes from specific provider
      */
     List<NoteList> getNotes();

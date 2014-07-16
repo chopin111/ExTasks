@@ -10,7 +10,7 @@
         android:id="@+id/tasksList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:textSize="20dip"
-        android:text="TextView"/>
+        android:text="TextView"
+        android:textSize="20dip" />
 </LinearLayout>
 

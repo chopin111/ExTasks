@@ -41,7 +41,6 @@ public class TrelloProviderTest extends TestCase {
         trelloProvider = new TrelloProvider();
         key = "key";
         token = "token";
-        System.out.println("setup");
     }
 
     /**
@@ -51,7 +50,7 @@ public class TrelloProviderTest extends TestCase {
     public void testGetNotesFromService() {
         trelloProvider.setKey(key);
         trelloProvider.setToken(token);
-        trelloProvider.setProvider(trelloManagerMock);
+        trelloProvider.setTrelloManager(trelloManagerMock);
         String memberId = "1";
         Member member = new Member();
         member.setId(memberId);
@@ -123,10 +122,6 @@ public class TrelloProviderTest extends TestCase {
 
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
 
 }

@@ -1,5 +1,5 @@
 apply plugin: 'android'
-
+apply plugin: 'jacoco'
 repositories {
     mavenCentral()
     maven {
@@ -8,22 +8,31 @@ repositories {
     maven { url "http://download.java.net/maven/2/" }
 }
 
+//configurations {
+//    unitTestCompile.extendsFrom runtime
+//    unitTestRuntime.extendsFrom unitTestCompile
+//}
+
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
-        testPackageName "pl.edu.agh.pp.extasks.tests"
+        testApplicationId "pl.edu.agh.pp.extasks.tests"
     }
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+        debug {
+            testCoverageEnabled = true
+        }
+
     }
 
     packagingOptions {
@@ -35,7 +44,11 @@ android {
     }
 
     sourceSets {
-        main { java.srcDirs = ['src/main/java', 'src/androidTest/java/'] }
+        main { java.srcDirs = ['src/main/java'] }
+    }
+
+    jacoco {
+        version = '0.6.2.201302030002'
     }
 }
 
@@ -48,14 +61,29 @@ dependencies {
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.android.support:support-v4:19.1.0'
 
-//    androidTestCompile "org.mockito:mockito-core:1.9.5"
-    compile "org.mockito:mockito-core:1.9.5"
-//    compile "org.mockito:mockito-all:1.9.5"
-    compile 'com.google.dexmaker:dexmaker:1.0'
-    compile 'com.google.dexmaker:dexmaker-mockito:1.0'
+    androidTestCompile files('$project.buildDir/intermediates/classes/release')
+    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+//    androidTestCompile 'org.mockito:mockito-all:1.8.4'
+    androidTestCompile 'com.google.android:android-test:4.1.1.4'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
 
-//    androidTestCompile 'junit:junit:3.8.1'
+    androidTestCompile 'junit:junit:3.8.1'
 //    androidTestCompile 'velocity:velocity-dep:1.4'
 //    androidTestCompile 'org.uncommons:reportng:1.1.4'
 //    androidTestCompile 'org.testng:testng:6.8.8'
 }
+
+//sourceSets {
+//    unitTest {
+//        java.srcDirs file('src/androidTest/java')
+//    }
+//}
+//
+//task unitTest(type: Test, dependsOn: assemble) {
+//    description = "run unit tests"
+//    testClassesDir = project.sourceSets.unitTest.output.classesDir
+//    classpath = project.sourceSets.unitTest.runtimeClasspath
+//}
+//
+//check.dependsOn unitTest

@@ -7,7 +7,9 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
-/**AsyncTask which delegates creating connection with a TaskProvider, recieves all the notes and returns them to the ExTasksActivity.
+/**
+ * AsyncTask which delegates creating connection with a TaskProvider, recieves all the notes and returns them to the MainActivity.
+ *
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
@@ -15,15 +17,14 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
     /**
      * Activity which will recieve note lists from provider.
      */
-    private SherlockFragmentActivity activity;
+    private MainActivity activity;
     private java.util.List<NoteList> noteLists;
     /**
      * Task provider which is called to create a connection and return notes.
      */
     private TasksProvider provider;
 
-    public ConnectionAsyncTask(SherlockFragmentActivity activity, TasksProvider provider) {
-        super();
+    public ConnectionAsyncTask(MainActivity activity, TasksProvider provider) {
         this.activity = activity;
         this.provider = provider;
     }
@@ -36,7 +37,7 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
 
         provider.getNotesFromService();
         noteLists = provider.getNotes();
-        ((ExTasksActivity) activity).updateNoteList(noteLists);
+        activity.updateNoteList(noteLists);
 
         return "";
     }

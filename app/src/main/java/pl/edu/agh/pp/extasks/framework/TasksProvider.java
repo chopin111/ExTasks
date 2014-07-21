@@ -10,6 +10,10 @@ import java.util.List;
  */
 public interface TasksProvider {
     /**
+     * Initializes provider.
+     */
+    void initialize();
+    /**
      * Returns all the notes as a list of note lists.
      *
      * @return list of notes from specific provider

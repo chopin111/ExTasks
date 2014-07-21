@@ -46,7 +46,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         final ActionBar ab = getSupportActionBar();
+        setupActionBar(ab);
 
+        // default to tab navigation
+        showTabsNav();
+
+        TextView tv = (TextView) findViewById(R.id.tasksList);
+        tv.setText("Press refresh button to get your Trello tasks");
+
+    }
+
+    private void setupActionBar(ActionBar ab) {
         // set defaults for logo & home up
         ab.setDisplayHomeAsUpEnabled(showHomeUp);
         ab.setDisplayUseLogoEnabled(useLogo);
@@ -67,14 +77,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     }
                 }
         );
-
-        // default to tab navigation
-        showTabsNav();
-
-        TextView tv = (TextView) findViewById(R.id.tasksList);
-        tv.setText("Press refresh button to get your Trello tasks");
-
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,10 +112,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     noteLists = new LinkedList<Note>();
                     value = new ConnectionAsyncTask(this, new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a")).execute().get();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
                     return false;
                 } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "ExecutionException at onOptionsItemSelected", e);
                     return false;
                 }
                 if (value != null) {

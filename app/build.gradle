@@ -3,18 +3,17 @@ apply plugin: 'jacoco'
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://raw.github.com/joelso/joelso-mvn-repo/master/snapshots/"
-    }
-    maven { url "http://download.java.net/maven/2/" }
+    maven { url 'https://raw.github.com/joelso/joelso-mvn-repo/master/snapshots/' }
+    maven { url 'http://download.java.net/maven/2/' }
 }
+
 
 android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
@@ -24,6 +23,9 @@ android {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+        debug {
+            testCoverageEnabled = true
         }
     }
 
@@ -46,22 +48,14 @@ android {
 
 dependencies {
     compile 'com.google.android.gms:play-services:4.4.52'
-
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'org.trello4j:trello4j:1.0-SNAPSHOT'
-
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.android.support:support-v4:19.1.0'
-
+    provided 'com.android.support:support-v4:19.1.0'
     androidTestCompile files('$project.buildDir/intermediates/classes/release')
     androidTestCompile 'org.mockito:mockito-core:1.9.5'
-//    androidTestCompile 'org.mockito:mockito-all:1.8.4'
     androidTestCompile 'com.google.android:android-test:4.1.1.4'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
-
     androidTestCompile 'junit:junit:3.8.1'
-//    androidTestCompile 'velocity:velocity-dep:1.4'
-//    androidTestCompile 'org.uncommons:reportng:1.1.4'
-//    androidTestCompile 'org.testng:testng:6.8.8'
 }

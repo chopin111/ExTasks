@@ -14,7 +14,7 @@ public interface TasksProvider {
      *
      * @return list of notes from specific provider
      */
-    List<NoteList> getNotes();
+    List<Note> getNotes();
 
     /**
      * Connects to the service, recieves all notes for specific accounts, converts and stores the notes into common model Note and NoteList.

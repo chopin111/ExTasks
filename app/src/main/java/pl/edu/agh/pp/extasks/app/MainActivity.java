@@ -20,9 +20,7 @@ import pl.edu.agh.pp.extasks.framework.Note;
 import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
-/**
- * Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
- *
+/**Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
@@ -31,16 +29,15 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     static final String TAG = MainActivity.class.getSimpleName();
 
     private final Handler handler = new Handler();
-    private List<NoteList> noteLists = new LinkedList<NoteList>();
+    private List<Note> noteLists = new LinkedList<Note>();
     private boolean useLogo = false;
     private boolean showHomeUp = false;
 
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
-     *
      * @param newList The new note list
      */
-    public void updateNoteList(List<NoteList> newList) {
+    public void updateNoteList(List<Note> newList) {
         noteLists = newList;
     }
 
@@ -108,6 +105,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 item.setActionView(R.layout.indeterminate_progress_action);
                 String value;
                 try {
+                    noteLists = new LinkedList<Note>();
                     value = new ConnectionAsyncTask(this, new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a")).execute().get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -134,11 +132,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private void refreshTextView() {
         TextView tv = (TextView) findViewById(R.id.tasksList);
         int whichNo = getActionBar().getSelectedTab().getPosition();
-        List<Note> taskList = noteLists.get(whichNo).getNotes();
-        tv.setText("");
-        for (Note n : taskList) {
-            tv.append(n.getText() + "\n");
-        }
+        Note note = noteLists.get(whichNo);
+        tv.setText(note.getText());
+//        for (Note n : taskList) {
+//            tv.append(n.getText() + "\n");
+//        }
     }
 
     /**
@@ -149,7 +147,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         int size = noteLists.size();
         ab.removeAllTabs();
         for (int i = 0; i < size; i++) {
-            ab.addTab(ab.newTab().setText(noteLists.get(i).getName()).setTabListener(this));
+            ab.addTab(ab.newTab().setText(noteLists.get(i).getTitle()).setTabListener(this));
         }
     }
 

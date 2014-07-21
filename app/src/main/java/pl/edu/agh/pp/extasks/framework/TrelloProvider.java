@@ -30,7 +30,7 @@ public class TrelloProvider implements TasksProvider {
     private Map<String, List<Card>> cardsByLists = new HashMap<String, List<Card>>();
     private Map<String, List<Checklist>> checklistByCard = new HashMap<String, List<Checklist>>();
     private Map<String, List<Checklist.CheckItem>> checkitemByChecklist = new HashMap<String, List<Checklist.CheckItem>>();
-    private List<NoteList> noteLists = new LinkedList<NoteList>();
+    private List<Note> noteLists = new LinkedList<Note>();
     /**
      * Key representing a user account
      */
@@ -69,19 +69,14 @@ public class TrelloProvider implements TasksProvider {
                 continue;
             }
             for (Card c : trelloManager.getCardsByBoard(b.getId())) {
-                NoteList noteList = new NoteList(c.getName());
-                for (Checklist cl : trelloManager.getChecklistByCard(c.getId())) {
-                    for (Checklist.CheckItem ci : trelloManager.getCheckItemsByChecklist(cl.getId())) {
-                        noteList.add(new Note(ci.getName(), ""));
-                    }
-                }
+                Note noteList = new Note(c.getName(), c.getDesc(), "");
                 noteLists.add(noteList);
             }
         }
     }
 
     @Override
-    public List<NoteList> getNotes() {
+    public List<Note> getNotes() {
         return noteLists;
     }
 

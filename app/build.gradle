@@ -1,5 +1,6 @@
 apply plugin: 'android'
 apply plugin: 'jacoco'
+
 repositories {
     mavenCentral()
     maven {
@@ -8,31 +9,22 @@ repositories {
     maven { url "http://download.java.net/maven/2/" }
 }
 
-//configurations {
-//    unitTestCompile.extendsFrom runtime
-//    unitTestRuntime.extendsFrom unitTestCompile
-//}
-
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
-        testApplicationId "pl.edu.agh.pp.extasks.tests"
+        testApplicationId  "pl.edu.agh.pp.extasks.tests"
     }
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
-        debug {
-            testCoverageEnabled = true
-        }
-
     }
 
     packagingOptions {
@@ -73,17 +65,3 @@ dependencies {
 //    androidTestCompile 'org.uncommons:reportng:1.1.4'
 //    androidTestCompile 'org.testng:testng:6.8.8'
 }
-
-//sourceSets {
-//    unitTest {
-//        java.srcDirs file('src/androidTest/java')
-//    }
-//}
-//
-//task unitTest(type: Test, dependsOn: assemble) {
-//    description = "run unit tests"
-//    testClassesDir = project.sourceSets.unitTest.output.classesDir
-//    classpath = project.sourceSets.unitTest.runtimeClasspath
-//}
-//
-//check.dependsOn unitTest

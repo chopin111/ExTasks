@@ -8,6 +8,10 @@ package pl.edu.agh.pp.extasks.framework;
  */
 public class Note {
     /**
+     * Title of a single note.
+     */
+    private String title;
+    /**
      * Contents of a single note.
      */
     private String text;
@@ -16,15 +20,26 @@ public class Note {
      */
     private String date;
 
-    public Note(String text, String date) {
+    public Note(String title, String text, String date) {
+        this.title = title;
         this.text = text;
         this.date = date;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @return Note contents.
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * @return Note creation date.
+     */
     public String getDate() {
         return date;
     }

@@ -25,4 +25,11 @@ public interface TasksProvider {
      */
     void getNotesFromService();
 
+    /**
+     * Adds a new note with specified title and text.
+     * @param title
+     * @param text
+     */
+    void addNote(String title, String text);
+
 }

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -18,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 import pl.edu.agh.pp.extasks.framework.Note;
 import pl.edu.agh.pp.extasks.framework.NoteList;
+import pl.edu.agh.pp.extasks.framework.TasksProvider;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
 /**Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
@@ -32,6 +34,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private List<Note> noteLists = new LinkedList<Note>();
     private boolean useLogo = false;
     private boolean showHomeUp = false;
+    private TasksProvider trelloProvider;
 
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
@@ -98,6 +101,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 return false;
             }
         });
+
+        final MenuItem settings = menu.findItem(R.id.menu_settings);
+        settings.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Log.d(TAG, "klikłem");
+                new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute();
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -110,7 +124,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 String value;
                 try {
                     noteLists = new LinkedList<Note>();
-                    value = new ConnectionAsyncTask(this, new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a")).execute().get();
+                    trelloProvider =  new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+                    value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
                 } catch (InterruptedException e) {
                     Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
                     return false;

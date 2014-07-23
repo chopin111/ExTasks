@@ -23,4 +23,9 @@
         <item>Videos</item>
         <item>Blog</item>
     </string-array>
+    <string-array name="options_list">
+        <item>Add Note</item>
+        <item>Add Provider</item>
+    </string-array>
+
 </resources>

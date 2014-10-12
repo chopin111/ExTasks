@@ -21,7 +21,7 @@ public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        provider.addNote("title", "text", "Przedmioty");
+        provider.addNote("title", "text", "533ed8670c086fe72c0fbe60");
         return "";
     }
 }

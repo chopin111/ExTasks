@@ -94,7 +94,7 @@ public class TrelloProvider implements TasksProvider {
     public void addNote(String title, String text, String list) {
         Map<String, String> map = new HashMap<String, String>();
         map.put("desc", text);
-        trelloManager.createCard(trelloManager.getListByBoard(list).get(0).getId(), title, map);
+        trelloManager.createCard(list, title, map);
     }
 
     @Override

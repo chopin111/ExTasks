@@ -10,9 +10,15 @@ import java.util.List;
  */
 public interface TasksProvider {
     /**
-     * Initializes provider.
+     * Authenticates with provider.
+     */
+    void authenticate();
+
+    /**
+     * Initializes provider
      */
     void initialize();
+
     /**
      * Returns all the notes as a list of note lists.
      *
@@ -27,9 +33,10 @@ public interface TasksProvider {
 
     /**
      * Adds a new note with specified title and text.
+     *
      * @param title
      * @param text
      */
-    void addNote(String title, String text);
+    void addNote(String title, String text, String list);
 
 }

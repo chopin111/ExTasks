@@ -29,9 +29,9 @@ public class TrelloProvider implements TasksProvider {
     /**
      * List of trello boards
      */
-    private List<Board> boards = new LinkedList<Board>();
+    private Map<String, Board> boardsByName = new HashMap<String, Board>();
     private List<org.trello4j.model.List> lists;
-    private Map<String, List<org.trello4j.model.List>> listsByBoards = new HashMap<String, List<org.trello4j.model.List>>();
+    private Map<String, org.trello4j.model.List> listByName = new HashMap<String, org.trello4j.model.List>();
     private Map<String, List<Card>> cardsByLists = new HashMap<String, List<Card>>();
     private Map<String, List<Checklist>> checklistByCard = new HashMap<String, List<Checklist>>();
     private Map<String, List<Checklist.CheckItem>> checkitemByChecklist = new HashMap<String, List<Checklist.CheckItem>>();
@@ -52,16 +52,24 @@ public class TrelloProvider implements TasksProvider {
     }
 
     @Override
-    public void initialize() {
+    public void authenticate() {
+//        trelloManager = new TrelloImpl(key);
         trelloManager = new TrelloImpl(key, token);
-        lists = trelloManager.getListByBoard(trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId()).get(0).getId());
+    }
+
+    @Override
+    public void initialize() {
+        List<Board> boards = trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId());
+        for (Board b : boards) {
+            boardsByName.put(b.getName(), b);
+        }
+
     }
 
     @Override
     public void getNotesFromService() {
-        boards = trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId());
         filterClosedBoards();
-        for (Board b : boards) {
+        for (Board b : boardsByName.values()) {
             Log.d("TrelloProvider", b.getId());
             for (Card c : trelloManager.getCardsByBoard(b.getId())) {
                 if (!c.isClosed()) {
@@ -73,7 +81,7 @@ public class TrelloProvider implements TasksProvider {
     }
 
     private void filterClosedBoards() {
-        Iterator<Board> it = boards.iterator();
+        Iterator<Board> it = boardsByName.values().iterator();
         while (it.hasNext()) {
             Board board = it.next();
             if (board.isClosed()) {
@@ -83,10 +91,10 @@ public class TrelloProvider implements TasksProvider {
     }
 
     @Override
-    public void addNote(String title, String text) {
+    public void addNote(String title, String text, String list) {
         Map<String, String> map = new HashMap<String, String>();
         map.put("desc", text);
-        trelloManager.createCard(trelloManager.getListByBoard(VIBoard.getId()).get(0).getId(), title, map);
+        trelloManager.createCard(trelloManager.getListByBoard(list).get(0).getId(), title, map);
     }
 
     @Override

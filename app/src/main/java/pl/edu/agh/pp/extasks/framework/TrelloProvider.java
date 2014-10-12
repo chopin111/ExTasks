@@ -1,6 +1,5 @@
 package pl.edu.agh.pp.extasks.framework;
 
-import android.nfc.Tag;
 import android.util.Log;
 
 import org.trello4j.Trello;
@@ -36,7 +35,6 @@ public class TrelloProvider implements TasksProvider {
     private Map<String, List<Checklist>> checklistByCard = new HashMap<String, List<Checklist>>();
     private Map<String, List<Checklist.CheckItem>> checkitemByChecklist = new HashMap<String, List<Checklist.CheckItem>>();
     private List<Note> noteList = new LinkedList<Note>();
-    private Board VIBoard;
     /**
      * Key representing a user account
      */
@@ -60,6 +58,7 @@ public class TrelloProvider implements TasksProvider {
     @Override
     public void initialize() {
         List<Board> boards = trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId());
+        boards = filterClosedBoards(boards);
         for (Board b : boards) {
             boardsByName.put(b.getName(), b);
         }
@@ -68,7 +67,6 @@ public class TrelloProvider implements TasksProvider {
 
     @Override
     public void getNotesFromService() {
-        filterClosedBoards();
         for (Board b : boardsByName.values()) {
             Log.d("TrelloProvider", b.getId());
             for (Card c : trelloManager.getCardsByBoard(b.getId())) {
@@ -80,14 +78,15 @@ public class TrelloProvider implements TasksProvider {
         }
     }
 
-    private void filterClosedBoards() {
-        Iterator<Board> it = boardsByName.values().iterator();
+    private List<Board> filterClosedBoards(List<Board> boardsList) {
+        Iterator<Board> it = boardsList.iterator();
         while (it.hasNext()) {
             Board board = it.next();
             if (board.isClosed()) {
                 it.remove();
             }
         }
+        return boardsList;
     }
 
     @Override

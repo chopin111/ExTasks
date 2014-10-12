@@ -1,11 +1,14 @@
 package pl.edu.agh.pp.extasks.app;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.SpinnerAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -15,10 +18,10 @@ import com.actionbarsherlock.view.MenuItem;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import pl.edu.agh.pp.extasks.framework.Note;
-import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
@@ -26,7 +29,7 @@ import pl.edu.agh.pp.extasks.framework.TrelloProvider;
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
-public class MainActivity extends SherlockFragmentActivity implements ActionBar.TabListener {
+public class MainActivity extends SherlockFragmentActivity implements ActionBar.TabListener, AddNoteDialogFragment.NoticeDialogListener {
 
     static final String TAG = MainActivity.class.getSimpleName();
 
@@ -82,6 +85,21 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         );
     }
 
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Dialog dialogView = dialog.getDialog();
+        EditText editTextName = (EditText) dialogView.findViewById(R.id.noteName);
+        EditText editText = (EditText) dialogView.findViewById(R.id.noteText);
+
+        TextView listID = (TextView) dialogView.findViewById(R.id.chosenListID);
+
+        new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID.getText().toString());
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,13 +120,16 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
             }
         });
 
-        final MenuItem settings = menu.findItem(R.id.menu_settings);
+        final MenuItem settings = menu.findItem(R.id.add_note);
         settings.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Log.d(TAG, "klikłem");
-                new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute();
+                AddNoteDialogFragment dialog = new AddNoteDialogFragment();
+                dialog.setFragmentManager(getSupportFragmentManager());
+                dialog.setTrelloProvider(trelloProvider);
+                dialog.show(getSupportFragmentManager(), "Add Note Dialog");
                 return false;
             }
         });
@@ -195,4 +216,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         // FIXME implement this
     }
 
+
+    public void chooseList(View view) {
+        ChooseListDialog dialog = new ChooseListDialog();
+        Map<String, org.trello4j.model.List> map = ((TrelloProvider) trelloProvider).getLists();
+        dialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
+        dialog.setItemsMap(((TrelloProvider) trelloProvider).getLists());
+        dialog.show(getSupportFragmentManager(), "Choose dialog");
+    }
 }

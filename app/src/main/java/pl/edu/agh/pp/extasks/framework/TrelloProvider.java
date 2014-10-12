@@ -60,6 +60,10 @@ public class TrelloProvider implements TasksProvider {
         List<Board> boards = trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId());
         boards = filterClosedBoards(boards);
         for (Board b : boards) {
+            List<org.trello4j.model.List> listOfLists = trelloManager.getListByBoard(b.getId());
+            for (org.trello4j.model.List l : listOfLists) {
+                listByName.put(b.getName() + "/" + l.getName(), l);
+            }
             boardsByName.put(b.getName(), b);
         }
 
@@ -99,6 +103,10 @@ public class TrelloProvider implements TasksProvider {
     @Override
     public List<Note> getNotes() {
         return noteList;
+    }
+
+    public Map<String, org.trello4j.model.List> getLists() {
+        return listByName;
     }
 
 }

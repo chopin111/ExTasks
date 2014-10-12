@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:weightSum="1"
+    android:id="@+id/add_note">
+    <Button
+        android:id="@+id/chooseList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Choose list"
+        android:onClick="chooseList"
+        />
+    <TextView
+        android:id="@+id/chosenListName"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="..."
+    />
+    <TextView
+        android:id="@+id/chosenListID"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="..."
+        />
+    <EditText
+        android:id="@+id/noteName"
+        android:inputType="textEmailAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="@string/noteName" />
+    <EditText
+        android:id="@+id/noteText"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"
+        android:hint="@string/text"
+        android:layout_weight="2.16" />
+</LinearLayout>

@@ -17,8 +17,8 @@
         android:title="@string/action_label_refresh" />
 
 
-    <item android:id="@+id/menu_settings"
-        android:title="MenuSettings"
+    <item android:id="@+id/add_note"
+        android:title="Add Note"
         android:showAsAction="never" />
 
 

@@ -2,7 +2,6 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.os.AsyncTask;
 
-import pl.edu.agh.pp.extasks.framework.Note;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
 public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
@@ -21,7 +20,7 @@ public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        provider.addNote("title", "text", "533ed8670c086fe72c0fbe60");
+        provider.addNote(strings[0], strings[1], strings[2]);
         return "";
     }
 }

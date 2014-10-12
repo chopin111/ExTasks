@@ -2,10 +2,7 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.os.AsyncTask;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
 import pl.edu.agh.pp.extasks.framework.Note;
-import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
 /**AsyncTask which delegates creating connection with a TaskProvider, recieves all the notes and returns them to the ExTasksActivity.
@@ -34,6 +31,7 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
         //trello
         //API key: c74be1bc4cc64e0eb21aa8cd68067c11
         //token: 1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a
+        provider.authenticate();
         provider.initialize();
         provider.getNotesFromService();
         noteLists = provider.getNotes();

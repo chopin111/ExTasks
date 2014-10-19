@@ -2,6 +2,7 @@ package pl.edu.agh.pp.extasks.framework;
 
 import android.util.Log;
 
+
 import org.trello4j.Trello;
 import org.trello4j.TrelloImpl;
 import org.trello4j.model.Board;
@@ -13,6 +14,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import nl.rgonline.lib.todoist.Item;
+import nl.rgonline.lib.todoist.Label;
+import nl.rgonline.lib.todoist.Project;
+import nl.rgonline.lib.todoist.TodoistApi;
+import nl.rgonline.lib.todoist.TodoistData;
+import nl.rgonline.lib.todoist.TodoistException;
 
 /**
  * Implementation of a provider for Trello communication
@@ -58,8 +66,10 @@ public class TrelloProvider implements TasksProvider {
     @Override
     public void initialize() {
         List<Board> boards = trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId());
-        boards = filterClosedBoards(boards);
         for (Board b : boards) {
+            if (b.isClosed()) {
+                continue;
+            }
             List<org.trello4j.model.List> listOfLists = trelloManager.getListByBoard(b.getId());
             for (org.trello4j.model.List l : listOfLists) {
                 listByName.put(b.getName() + "/" + l.getName(), l);
@@ -71,6 +81,27 @@ public class TrelloProvider implements TasksProvider {
 
     @Override
     public void getNotesFromService() {
+        TodoistApi todoistApi = new TodoistApi();
+        todoistApi.login("jakublasisz@gmail.com", "iamalazybastard");
+        try {
+            todoistApi.syncAndGetUpdated();
+            TodoistData data = todoistApi.get();
+            List<Item> items = data.getItems();
+            for (Item i : items) {
+                Log.d("item", i.getProject().toString() + " " + i.getContent() + " " + i.toString());
+            }
+            List<Label> labels = data.getLabels();
+            for (Label l : labels) {
+                Log.d("label", l.getName() + " " + l.toString());
+            }
+            for (Project p : data.getProjects()) {
+                Log.d("project", p.getName() + " " + p.toString());
+            }
+            Log.d("todoistt", data.toString());
+
+        } catch (Exception e) {
+            Log.d("dupa", "dupa");
+        }
         for (Board b : boardsByName.values()) {
             Log.d("TrelloProvider", b.getId());
             for (Card c : trelloManager.getCardsByBoard(b.getId())) {
@@ -80,17 +111,6 @@ public class TrelloProvider implements TasksProvider {
                 }
             }
         }
-    }
-
-    private List<Board> filterClosedBoards(List<Board> boardsList) {
-        Iterator<Board> it = boardsList.iterator();
-        while (it.hasNext()) {
-            Board board = it.next();
-            if (board.isClosed()) {
-                it.remove();
-            }
-        }
-        return boardsList;
     }
 
     @Override

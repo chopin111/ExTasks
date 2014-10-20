@@ -1,6 +1,11 @@
 package pl.edu.agh.pp.extasks.app;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
@@ -136,31 +141,57 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         return super.onCreateOptionsMenu(menu);
     }
 
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+       // cm.requestRouteToHost(ConnectivityManager.TYPE_WIFI, )
+        return false;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
                 // switch to a progress animation
-                item.setActionView(R.layout.indeterminate_progress_action);
-                String value;
-                try {
-                    noteLists = new LinkedList<Note>();
-                    trelloProvider =  new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
-                    value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
-                    return false;
-                } catch (ExecutionException e) {
-                    Log.e(TAG, "ExecutionException at onOptionsItemSelected", e);
-                    return false;
-                }
-                if (value != null) {
-                    Log.d(TAG, "zwracam true");
-                    refreshTabs();
-                    refreshTextView();
-                    return true;
+                if (isOnline()) {
+                    item.setActionView(R.layout.indeterminate_progress_action);
+                    String value;
+                    try {
+                        noteLists = new LinkedList<Note>();
+                        trelloProvider = new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+                        value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
+                        return false;
+                    } catch (ExecutionException e) {
+                        Log.e(TAG, "ExecutionException at onOptionsItemSelected", e);
+                        return false;
+                    }
+                    if (value != null) {
+                        Log.d(TAG, "zwracam true");
+                        refreshTabs();
+                        refreshTextView();
+                        return true;
+                    } else
+                        return false;
                 } else
-                    return false;
+                {
+                    new AlertDialog.Builder(MainActivity.this.getApplicationContext())
+                            .setTitle("INTERNET CONNECTION ERROR")
+                            .setMessage("Turn on your Internet connection and try again.")
+                            .setCancelable(false)
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,
+                                                            int whichButton) {
+                                            finish();
+                                        }
+                                    }).create();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -216,12 +247,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         // FIXME implement this
     }
 
-
     public void chooseList(View view) {
         ChooseListDialog dialog = new ChooseListDialog();
         Map<String, org.trello4j.model.List> map = ((TrelloProvider) trelloProvider).getLists();
-        dialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
-        dialog.setItemsMap(((TrelloProvider) trelloProvider).getLists());
-        dialog.show(getSupportFragmentManager(), "Choose dialog");
+        ChooseListDialog dialog2 = dialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
+        dialog2.setItemsMap(((TrelloProvider) trelloProvider).getLists());
+        dialog2.show(getSupportFragmentManager(), "Choose dialog");
     }
 }

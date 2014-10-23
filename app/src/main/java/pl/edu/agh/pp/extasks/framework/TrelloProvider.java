@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+
 import nl.rgonline.lib.todoist.Item;
 import nl.rgonline.lib.todoist.Label;
 import nl.rgonline.lib.todoist.Project;
@@ -115,9 +116,10 @@ public class TrelloProvider implements TasksProvider {
 
     @Override
     public void addNote(String title, String text, String list) {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("desc", text);
-        trelloManager.createCard(list, title, map);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("desc", (Object)text);
+        Card c = trelloManager.createCard(list, title, map);
+        //trelloManager.deleteCard(c.getId());
     }
 
     @Override

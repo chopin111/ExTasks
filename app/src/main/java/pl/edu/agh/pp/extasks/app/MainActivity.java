@@ -110,7 +110,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     @Override
     public void onListChoose(String listName, String listID) {
-        chosenListID = listID;
+        chosenListID = listID.substring(5);
 
         /*View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_addnote, null);
         TextView listNameDialog = (TextView) view.findViewById(R.id.chosenListName);

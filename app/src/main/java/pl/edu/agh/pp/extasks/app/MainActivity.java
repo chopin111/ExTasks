@@ -34,7 +34,7 @@ import pl.edu.agh.pp.extasks.framework.TrelloProvider;
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
-public class MainActivity extends SherlockFragmentActivity implements ActionBar.TabListener, AddNoteDialogFragment.NoticeDialogListener {
+public class MainActivity extends SherlockFragmentActivity implements ActionBar.TabListener, AddNoteDialogFragment.NoticeDialogListener, ChooseListDialog.chooseListInt {
 
     static final String TAG = MainActivity.class.getSimpleName();
 
@@ -43,6 +43,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private boolean useLogo = false;
     private boolean showHomeUp = false;
     private TasksProvider trelloProvider;
+    private String chosenListID;
 
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
@@ -96,14 +97,31 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         EditText editTextName = (EditText) dialogView.findViewById(R.id.noteName);
         EditText editText = (EditText) dialogView.findViewById(R.id.noteText);
 
-        TextView listID = (TextView) dialogView.findViewById(R.id.chosenListID);
+        String listID = chosenListID;
+        //TextView listID = (TextView) dialogView.findViewById(R.id.chosenListID);
 
-        new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID.getText().toString());
+        new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID);
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
 
+    }
+
+    @Override
+    public void onListChoose(String listName, String listID) {
+        chosenListID = listID;
+
+        /*View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_addnote, null);
+        TextView listNameDialog = (TextView) view.findViewById(R.id.chosenListName);
+        TextView listIDDialog = (TextView) view.findViewById(R.id.chosenListID);
+        listNameDialog.setText(listName);
+        listIDDialog.setText(listID);
+
+        listNameDialog.invalidate();
+        listIDDialog.invalidate();*/
+
+        //cosiek.getDialog().setContentView(view);
     }
 
     @Override
@@ -248,9 +266,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 
     public void chooseList(View view) {
-        ChooseListDialog dialog = new ChooseListDialog();
+        //ChooseListDialog dialog = new ChooseListDialog();
         Map<String, org.trello4j.model.List> map = ((TrelloProvider) trelloProvider).getLists();
-        ChooseListDialog dialog2 = dialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
+        ChooseListDialog dialog2 = ChooseListDialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
         dialog2.setItemsMap(((TrelloProvider) trelloProvider).getLists());
         dialog2.show(getSupportFragmentManager(), "Choose dialog");
     }

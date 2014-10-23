@@ -1,5 +1,6 @@
 package pl.edu.agh.pp.extasks.app;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -20,9 +21,15 @@ public class ChooseListDialog extends DialogFragment {
     public LayoutInflater inflater;
     public CharSequence chosenList;
     public CharSequence chosenListID;
+
     public void setItemsMap(Map<String, List> items) {
         itemsMap = items;
     }
+
+    public interface chooseListInt {
+        public void onListChoose(String ListName, String listID);
+    }
+    private chooseListInt mListener;
 
     static ChooseListDialog newInstance(String[] items) {
         ChooseListDialog c = new ChooseListDialog();
@@ -34,53 +41,35 @@ public class ChooseListDialog extends DialogFragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the NoticeDialogListener so we can send events to the host
+            mListener = (chooseListInt) activity;
+        } catch (ClassCastException e) {
+            // The activity doesn't implement the interface, throw exception
+            throw new ClassCastException(activity.toString()
+                    + " must implement NoticeDialogListener");
+        }
+    }
+
+    @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Use the Builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         final CharSequence[] items = getArguments().getStringArray("items");
-        //final String[] items = itemsMap.keySet().toArray(new String[itemsMap.keySet().size()]);
         inflater = getActivity().getLayoutInflater();
 
-        //builder.setView(inflater.inflate(R.layout.choose_list_dialog, null)).setMessage("Choose a list")
         builder.setTitle("Choose a list")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        /*LinearLayout rowLink = (LinearLayout) inflater.inflate(R.layout.dialog_addnote, null);
-                        //rowLink.setListName("kupa");
-                        //Dialog d = (Dialog) getActivity().getFragmentManager().findFragmentById(R.id.choose_list_dialog);
-
-                        ((TextView) getActivity().getLayoutInflater().inflate(R.layout.dialog_addnote, null).findViewById(R.id.chosenListName)).setText(items[which]);
-                        //TextView chosenList = (TextView) getDialog().findViewById(R.id.chosenListName);
-                        //chosenList.setText(items[which]);
-                        CharSequence cosiek = items[which];
-                        ((TextView) getActivity().getLayoutInflater().inflate(R.layout.dialog_addnote, null).findViewById(R.id.chosenListID)).setText(itemsMap.get(items[which]).getId());
-                        //chosenListID.setText(itemsMap.get(items[which]).getId());
-                        getActivity().getLayoutInflater().inflate(R.layout.dialog_addnote, null).findViewById(R.id.chosenListID).invalidate();
-                        getActivity().getLayoutInflater().inflate(R.layout.dialog_addnote, null).findViewById(R.id.chosenListName).invalidate();*/
-                        //setChosenList(items[which]);
-                        //setChosenListID(itemsMap.get(items[which]).getId());
-
+                        mListener.onListChoose(items[which].toString(), itemsMap.get(items[which]).toString());
+                        dialog.dismiss();
                     }
                 });
 
         return builder.create();
-    }
-
-    public CharSequence getChosenListID() {
-        return chosenListID;
-    }
-
-    public void setChosenListID(CharSequence chosenListID) {
-        this.chosenListID = chosenListID;
-    }
-
-    public CharSequence getChosenList() {
-        return chosenList;
-    }
-
-    public void setChosenList(CharSequence chosenList) {
-        this.chosenList = chosenList;
     }
 }

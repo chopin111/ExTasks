@@ -13,7 +13,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -21,6 +23,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import org.trello4j.model.Board;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +37,9 @@ import pl.edu.agh.pp.extasks.framework.Note;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
-/**Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
+/**
+ * Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
+ *
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
@@ -44,9 +53,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private boolean showHomeUp = false;
     private TasksProvider trelloProvider;
     private String chosenListID;
+    private Map<Board, List<Note>> boardsMap;
 
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
+     *
      * @param newList The new note list
      */
     public void updateNoteList(List<Note> newList) {
@@ -63,8 +74,13 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         // default to tab navigation
         showTabsNav();
 
-        TextView tv = (TextView) findViewById(R.id.tasksList);
-        tv.setText("Press refresh button to get your Trello tasks");
+        ListView lv = (ListView) findViewById(R.id.tasksListView);
+
+        String[] values = new String[1];
+        values[0] = "Press refresh to update lists";
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
+        lv.setAdapter(adapter);
 
     }
 
@@ -98,7 +114,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         EditText editText = (EditText) dialogView.findViewById(R.id.noteText);
 
         String listID = chosenListID;
-        //TextView listID = (TextView) dialogView.findViewById(R.id.chosenListID);
 
         new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID);
     }
@@ -166,7 +181,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
         }
-       // cm.requestRouteToHost(ConnectivityManager.TYPE_WIFI, )
+        // cm.requestRouteToHost(ConnectivityManager.TYPE_WIFI, )
         return false;
     }
 
@@ -196,8 +211,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                         return true;
                     } else
                         return false;
-                } else
-                {
+                } else {
                     new AlertDialog.Builder(MainActivity.this.getApplicationContext())
                             .setTitle("INTERNET CONNECTION ERROR")
                             .setMessage("Turn on your Internet connection and try again.")
@@ -219,24 +233,42 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
      * Refreshes currently selected tab.
      */
     private void refreshTextView() {
-        TextView tv = (TextView) findViewById(R.id.tasksList);
-        int whichNo = getActionBar().getSelectedTab().getPosition();
-        Note note = noteLists.get(whichNo);
-        tv.setText(note.getText());
-//        for (Note n : taskList) {
-//            tv.append(n.getText() + "\n");
-//        }
+        ListView lv = (ListView) findViewById(R.id.tasksListView);
+        android.app.ActionBar ab = getActionBar();
+        int tabNo = 0;
+        if (ab != null) {
+            android.app.ActionBar.Tab tab = ab.getSelectedTab();
+            if (tab != null) {
+                tabNo = tab.getPosition();
+            }
+        }
+        Board chosenBoard = (Board) boardsMap.keySet().toArray()[tabNo];
+        List<Note> chosenBoardNotes = boardsMap.get(chosenBoard);
+
+        List<String> values = createValues(chosenBoardNotes);
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
+        lv.setAdapter(adapter);
     }
+
+    private List<String> createValues(List<Note> chosenBoardNotes) {
+        List<String> values = new ArrayList<String>(chosenBoardNotes.size());
+        for (Note n : chosenBoardNotes) {
+            values.add(n.getTitle());
+        }
+        return values;
+    }
+
 
     /**
      * Refreshes all tabs in activity.
      */
     private void refreshTabs() {
         ActionBar ab = getSupportActionBar();
-        int size = noteLists.size();
+        int size = boardsMap.size();
         ab.removeAllTabs();
         for (int i = 0; i < size; i++) {
-            ab.addTab(ab.newTab().setText(noteLists.get(i).getTitle()).setTabListener(this));
+            ab.addTab(ab.newTab().setText(((Board) boardsMap.keySet().toArray()[i]).getName()).setTabListener(this));
         }
     }
 
@@ -271,5 +303,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         ChooseListDialog dialog2 = ChooseListDialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
         dialog2.setItemsMap(((TrelloProvider) trelloProvider).getLists());
         dialog2.show(getSupportFragmentManager(), "Choose dialog");
+    }
+
+    public void updateBoardsMap(Map<Board, List<Note>> boardsMap) {
+        this.boardsMap = boardsMap;
     }
 }

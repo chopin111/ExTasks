@@ -9,6 +9,7 @@ import org.trello4j.model.Board;
 import org.trello4j.model.Card;
 import org.trello4j.model.Checklist;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,6 +39,7 @@ public class TrelloProvider implements TasksProvider {
      * List of trello boards
      */
     private Map<String, Board> boardsByName = new HashMap<String, Board>();
+    private Map<Board, List<Note>> boardsMap = new HashMap<>();
     private List<org.trello4j.model.List> lists;
     private Map<String, org.trello4j.model.List> listByName = new HashMap<String, org.trello4j.model.List>();
     private Map<String, List<Card>> cardsByLists = new HashMap<String, List<Card>>();
@@ -72,6 +74,13 @@ public class TrelloProvider implements TasksProvider {
                 continue;
             }
             List<org.trello4j.model.List> listOfLists = trelloManager.getListByBoard(b.getId());
+            List<Card> listTmp = trelloManager.getCardsByBoard(b.getId());
+            List<Note> notesTmp = new ArrayList<>();
+            for (Card card:listTmp) {
+                notesTmp.add(new Note(card.getName(), card.getDesc(), ""));
+            }
+            boardsMap.put(b, notesTmp);
+
             for (org.trello4j.model.List l : listOfLists) {
                 listByName.put(b.getName() + "/" + l.getName(), l);
             }
@@ -129,6 +138,10 @@ public class TrelloProvider implements TasksProvider {
 
     public Map<String, org.trello4j.model.List> getLists() {
         return listByName;
+    }
+
+    public Map<Board, List<Note>> getBoards() {
+        return boardsMap;
     }
 
 }

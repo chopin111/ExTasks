@@ -1,6 +1,9 @@
 package pl.edu.agh.pp.extasks.framework;
 
+import org.trello4j.model.Board;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * Common interface for all different providers.
@@ -38,5 +41,7 @@ public interface TasksProvider {
      * @param text
      */
     void addNote(String title, String text, String list);
+
+    Map<Board, List<Note>> getBoards();
 
 }

@@ -2,6 +2,11 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.os.AsyncTask;
 
+import org.trello4j.model.Board;
+
+import java.util.List;
+import java.util.Map;
+
 import pl.edu.agh.pp.extasks.framework.Note;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
@@ -15,6 +20,7 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
      */
     private MainActivity activity;
     private java.util.List<Note> noteLists;
+    private Map<Board, List<Note>> boardsMap;
     /**
      * Task provider which is called to create a connection and return notes.
      */
@@ -36,6 +42,8 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
         provider.getNotesFromService();
         noteLists = provider.getNotes();
         activity.updateNoteList(noteLists);
+        boardsMap = provider.getBoards();
+        activity.updateBoardsMap(boardsMap);
 
         return "";
     }

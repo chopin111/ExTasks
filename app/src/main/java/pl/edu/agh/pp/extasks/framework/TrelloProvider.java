@@ -128,7 +128,6 @@ public class TrelloProvider implements TasksProvider {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("desc", (Object)text);
         Card c = trelloManager.createCard(list, title, map);
-        //trelloManager.deleteCard(c.getId());
     }
 
     @Override
@@ -149,4 +148,7 @@ public class TrelloProvider implements TasksProvider {
         return boardsMap;
     }
 
+    public void editNote(String cardId, String cardTitle, String cardText) {
+        trelloManager.updateCard(cardId, cardTitle, cardText);
+    }
 }

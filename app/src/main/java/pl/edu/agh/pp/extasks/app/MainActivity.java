@@ -13,6 +13,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -128,17 +129,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     @Override
     public void onListChoose(String listName, String listID) {
         chosenListID = listID.substring(5);
-
-        /*View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_addnote, null);
-        TextView listNameDialog = (TextView) view.findViewById(R.id.chosenListName);
-        TextView listIDDialog = (TextView) view.findViewById(R.id.chosenListID);
-        listNameDialog.setText(listName);
-        listIDDialog.setText(listID);
-
-        listNameDialog.invalidate();
-        listIDDialog.invalidate();*/
-
-        //cosiek.getDialog().setContentView(view);
     }
 
     @Override
@@ -270,30 +260,54 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        String name = getMenuDesc(item);
-        if (name.equals("Delete Note")) {
-            String cardId = boardsMap.get(chosenBoard).get(info.position).getId();
-            new RemoveNoteAsyncTask(MainActivity.this, trelloProvider).execute(cardId);
-        }
+        getMenuDesc(item);
+
         refreshTextView();
         return true;
     }
 
-    public String getMenuDesc(android.view.MenuItem item) {
+    public void getMenuDesc(android.view.MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int menuItemIndex = item.getItemId();
         String[] menuItems = getResources().getStringArray(R.array.listview_options);
-        String menuItemName = menuItems[menuItemIndex];
-        return menuItemName;
+        String name = menuItems[menuItemIndex];
+        doStuff(name, info);
     }
 
-    private List<String> createValues(List<Note> chosenBoardNotes) {
-        List<String> values = new ArrayList<String>(chosenBoardNotes.size());
-        for (Note n : chosenBoardNotes) {
-            values.add(n.getTitle());
+    public void doStuff(String name, AdapterView.AdapterContextMenuInfo info) {
+        if (name.equals("Delete Note")) {
+            String cardId = boardsMap.get(chosenBoard).get(info.position).getId();
+            new RemoveNoteAsyncTask(MainActivity.this, trelloProvider).execute(cardId);
+        } else if (name.equals("Edit Note")) {
+            final String cardId = boardsMap.get(chosenBoard).get(info.position).getId();
+            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            LayoutInflater inflater = getLayoutInflater();
+            final EditText newTitle;
+            final EditText newText;
+            newTitle = (EditText) findViewById(R.id.noteName);
+            newText = (EditText) findViewById(R.id.noteText);
+
+            builder.setView(inflater.inflate(R.layout.dialog_editnote, null))
+                    .setMessage("Save note")
+                    .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            EditText editTextName = (EditText) ((Dialog) dialog).findViewById(R.id.editNoteName);
+                            EditText editText = (EditText) ((Dialog) dialog).findViewById(R.id.editNoteText);
+
+                            new EditNoteAsyncTask(MainActivity.this, trelloProvider).execute(cardId, editTextName.getText().toString(), editText.getText().toString());
+                            refreshTextView();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            builder.show();
         }
-        return values;
     }
+
 
     /**
      * Refreshes all tabs in activity.
@@ -343,4 +357,13 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     public void updateBoardsMap(Map<Board, List<Note>> boardsMap) {
         this.boardsMap = boardsMap;
     }
+
+    private List<String> createValues(List<Note> chosenBoardNotes) {
+        List<String> values = new ArrayList<>(chosenBoardNotes.size());
+        for (Note n : chosenBoardNotes) {
+            values.add(n.getTitle());
+        }
+        return values;
+    }
+
 }

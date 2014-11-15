@@ -46,4 +46,6 @@ public interface TasksProvider {
 
     Map<Board, List<Note>> getBoards();
 
+    void editNote(String cardId, String cardTitle, String cardText);
+
 }

@@ -77,7 +77,7 @@ public class TrelloProvider implements TasksProvider {
             List<Card> listTmp = trelloManager.getCardsByBoard(b.getId());
             List<Note> notesTmp = new ArrayList<>();
             for (Card card:listTmp) {
-                notesTmp.add(new Note(card.getName(), card.getDesc(), ""));
+                notesTmp.add(new Note(card.getName(), card.getDesc(), "", card.getId()));
             }
             boardsMap.put(b, notesTmp);
 
@@ -116,7 +116,7 @@ public class TrelloProvider implements TasksProvider {
             Log.d("TrelloProvider", b.getId());
             for (Card c : trelloManager.getCardsByBoard(b.getId())) {
                 if (!c.isClosed()) {
-                    Note noteList = new Note(c.getName(), c.getDesc(), "");
+                    Note noteList = new Note(c.getName(), c.getDesc(), "", c.getId());
                     this.noteList.add(noteList);
                 }
             }
@@ -129,6 +129,11 @@ public class TrelloProvider implements TasksProvider {
         map.put("desc", (Object)text);
         Card c = trelloManager.createCard(list, title, map);
         //trelloManager.deleteCard(c.getId());
+    }
+
+    @Override
+    public void removeNote(String cardId) {
+        trelloManager.deleteCard(cardId);
     }
 
     @Override

@@ -2,6 +2,7 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
@@ -11,7 +12,9 @@ import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -54,6 +57,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private TasksProvider trelloProvider;
     private String chosenListID;
     private Map<Board, List<Note>> boardsMap;
+    private Board chosenBoard;
 
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
@@ -73,7 +77,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
         // default to tab navigation
         showTabsNav();
-
         ListView lv = (ListView) findViewById(R.id.tasksListView);
 
         String[] values = new String[1];
@@ -81,7 +84,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
         lv.setAdapter(adapter);
-
     }
 
     private void setupActionBar(ActionBar ab) {
@@ -232,6 +234,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     /**
      * Refreshes currently selected tab.
      */
+
     private void refreshTextView() {
         ListView lv = (ListView) findViewById(R.id.tasksListView);
         android.app.ActionBar ab = getActionBar();
@@ -242,13 +245,46 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 tabNo = tab.getPosition();
             }
         }
-        Board chosenBoard = (Board) boardsMap.keySet().toArray()[tabNo];
+        chosenBoard = (Board) boardsMap.keySet().toArray()[tabNo];
         List<Note> chosenBoardNotes = boardsMap.get(chosenBoard);
 
         List<String> values = createValues(chosenBoardNotes);
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
         lv.setAdapter(adapter);
+        registerForContextMenu(lv);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId()==R.id.tasksListView) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            menu.setHeaderTitle(boardsMap.get(chosenBoard).get(info.position).getTitle());
+            String[] menuItems = getResources().getStringArray(R.array.listview_options);
+            for (int i = 0; i<menuItems.length; i++) {
+                menu.add(Menu.NONE, i, i, menuItems[i]);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        String name = getMenuDesc(item);
+        if (name.equals("Delete Note")) {
+            String cardId = boardsMap.get(chosenBoard).get(info.position).getId();
+            new RemoveNoteAsyncTask(MainActivity.this, trelloProvider).execute(cardId);
+        }
+        refreshTextView();
+        return true;
+    }
+
+    public String getMenuDesc(android.view.MenuItem item) {
+        int menuItemIndex = item.getItemId();
+        String[] menuItems = getResources().getStringArray(R.array.listview_options);
+        String menuItemName = menuItems[menuItemIndex];
+        return menuItemName;
     }
 
     private List<String> createValues(List<Note> chosenBoardNotes) {
@@ -258,7 +294,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         }
         return values;
     }
-
 
     /**
      * Refreshes all tabs in activity.

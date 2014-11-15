@@ -42,6 +42,8 @@ public interface TasksProvider {
      */
     void addNote(String title, String text, String list);
 
+    void removeNote(String cardId);
+
     Map<Board, List<Note>> getBoards();
 
 }

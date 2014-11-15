@@ -20,10 +20,13 @@ public class Note {
      */
     private String date;
 
-    public Note(String title, String text, String date) {
+    private String id;
+
+    public Note(String title, String text, String date, String id) {
         this.title = title;
         this.text = text;
         this.date = date;
+        this.id = id;
     }
 
     public String getTitle() {
@@ -44,4 +47,5 @@ public class Note {
         return date;
     }
 
+    public String getId() { return id; }
 }

@@ -11,24 +11,19 @@ import android.view.LayoutInflater;
 import org.trello4j.model.List;
 
 import java.util.Map;
+import java.util.TreeMap;
+
+import pl.edu.agh.pp.extasks.framework.NoteList;
 
 
 /**
  * Created by Maciek on 2014-10-12.
  */
 public class ChooseListDialog extends DialogFragment {
-    public Map<String, List> itemsMap;
+    public Map<String, NoteList> itemsMap = new TreeMap<>();
     public LayoutInflater inflater;
     public CharSequence chosenList;
     public CharSequence chosenListID;
-
-    public void setItemsMap(Map<String, List> items) {
-        itemsMap = items;
-    }
-
-    public interface chooseListInt {
-        public void onListChoose(String ListName, String listID);
-    }
     private chooseListInt mListener;
 
     static ChooseListDialog newInstance(String[] items) {
@@ -38,6 +33,10 @@ public class ChooseListDialog extends DialogFragment {
         c.setArguments(args);
 
         return c;
+    }
+
+    public void appendItemsMap(Map<String, NoteList> items) {
+        itemsMap.putAll(items);
     }
 
     @Override
@@ -65,11 +64,16 @@ public class ChooseListDialog extends DialogFragment {
         builder.setTitle("Choose a list")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        mListener.onListChoose(items[which].toString(), itemsMap.get(items[which]).toString());
+                        String chosen = items[which].toString();
+                        mListener.onListChoose(chosen, itemsMap.get(chosen).getId());
                         dialog.dismiss();
                     }
                 });
 
         return builder.create();
+    }
+
+    public interface chooseListInt {
+        public void onListChoose(String ListName, String listID);
     }
 }

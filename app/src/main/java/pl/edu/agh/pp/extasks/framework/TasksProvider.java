@@ -1,7 +1,5 @@
 package pl.edu.agh.pp.extasks.framework;
 
-import org.trello4j.model.Board;
-
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +18,7 @@ public interface TasksProvider {
     /**
      * Initializes provider
      */
-    void initialize();
+    void initialize() throws InitializationException;
 
     /**
      * Returns all the notes as a list of note lists.
@@ -40,12 +38,35 @@ public interface TasksProvider {
      * @param title
      * @param text
      */
-    void addNote(String title, String text, String list);
+    void addNote(String title, String text, String list) throws SynchronizationException;
 
-    void removeNote(String cardId);
+    /**
+     * Removes note with specified id.
+     *
+     * @param cardId
+     */
+    void removeNote(String cardId) throws SynchronizationException;
 
-    Map<Board, List<Note>> getBoards();
+    /**
+     * Returns all NoteList objects as a list.
+     *
+     * @return list of NoteList objects related to provider
+     */
+    List<NoteList> getBoards();
 
+    /**
+     * Returns a Map with relation id of list -> NoteList object
+     *
+     * @return map of list ids to NoteList objects
+     */
+    Map<String, NoteList> getListsMap();
+
+    /**
+     * Edits specified note
+     * @param cardId ID of note to be edited
+     * @param cardTitle new title of note
+     * @param cardText new text of note
+     */
     void editNote(String cardId, String cardTitle, String cardText);
 
 }

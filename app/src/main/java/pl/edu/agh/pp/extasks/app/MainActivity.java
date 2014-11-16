@@ -35,10 +35,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
 import pl.edu.agh.pp.extasks.framework.Note;
+import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
+import pl.edu.agh.pp.extasks.framework.TodoistProvider;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
 
 /**
@@ -49,16 +52,19 @@ import pl.edu.agh.pp.extasks.framework.TrelloProvider;
  */
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.TabListener, AddNoteDialogFragment.NoticeDialogListener, ChooseListDialog.chooseListInt {
 
-    static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private final Handler handler = new Handler();
+    private final boolean useLogo = false;
+    private final boolean showHomeUp = false;
+    private final Map<String, NoteList> listByNamesMap = new TreeMap<>();
+    private final List<NoteList> boards = new ArrayList<>();
     private List<Note> noteLists = new LinkedList<Note>();
-    private boolean useLogo = false;
-    private boolean showHomeUp = false;
     private TasksProvider trelloProvider;
+    private TasksProvider todoistProvider;
+    private TasksProvider chosenProvider;
     private String chosenListID;
-    private Map<Board, List<Note>> boardsMap;
-    private Board chosenBoard;
+    private NoteList chosenBoard;
 
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
@@ -78,12 +84,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
         // default to tab navigation
         showTabsNav();
-        ListView lv = (ListView) findViewById(R.id.tasksListView);
+        final ListView lv = (ListView) findViewById(R.id.tasksListView);
 
-        String[] values = new String[1];
-        values[0] = "Press refresh to update lists";
+        final String[] values = {"Press refresh to update lists"};
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
+        final ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
         lv.setAdapter(adapter);
     }
 
@@ -112,13 +117,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        Dialog dialogView = dialog.getDialog();
-        EditText editTextName = (EditText) dialogView.findViewById(R.id.noteName);
-        EditText editText = (EditText) dialogView.findViewById(R.id.noteText);
+        final Dialog dialogView = dialog.getDialog();
+        final EditText editTextName = (EditText) dialogView.findViewById(R.id.noteName);
+        final EditText editText = (EditText) dialogView.findViewById(R.id.noteText);
 
-        String listID = chosenListID;
-
-        new AddNoteAsyncTask(MainActivity.this, trelloProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID);
+        final String listID = chosenListID;
+        new AddNoteAsyncTask(MainActivity.this, chosenProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID);
     }
 
     @Override
@@ -128,7 +132,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     @Override
     public void onListChoose(String listName, String listID) {
-        chosenListID = listID.substring(5);
+        chosenListID = listID;
+        chosenProvider = listByNamesMap.get(listName).getProvider();
     }
 
     @Override
@@ -155,10 +160,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                Log.d(TAG, "klikłem");
                 AddNoteDialogFragment dialog = new AddNoteDialogFragment();
-                dialog.setFragmentManager(getSupportFragmentManager());
-                dialog.setTrelloProvider(trelloProvider);
                 dialog.show(getSupportFragmentManager(), "Add Note Dialog");
                 return false;
             }
@@ -167,13 +169,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 
     public boolean isOnline() {
-        ConnectivityManager cm =
+        final ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
         }
-        // cm.requestRouteToHost(ConnectivityManager.TYPE_WIFI, )
         return false;
     }
 
@@ -187,8 +188,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     String value;
                     try {
                         noteLists = new LinkedList<Note>();
+                        boards.clear();
                         trelloProvider = new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+                        todoistProvider = new TodoistProvider("jakublasisz@gmail.com", "iamalazybastard");
                         value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
+                        new ConnectionAsyncTask(this, todoistProvider).execute().get();
                     } catch (InterruptedException e) {
                         Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
                         return false;
@@ -197,7 +201,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                         return false;
                     }
                     if (value != null) {
-                        Log.d(TAG, "zwracam true");
                         refreshTabs();
                         refreshTextView();
                         return true;
@@ -226,7 +229,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
      */
 
     private void refreshTextView() {
-        ListView lv = (ListView) findViewById(R.id.tasksListView);
+        final ListView lv = (ListView) findViewById(R.id.tasksListView);
         android.app.ActionBar ab = getActionBar();
         int tabNo = 0;
         if (ab != null) {
@@ -235,12 +238,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 tabNo = tab.getPosition();
             }
         }
-        chosenBoard = (Board) boardsMap.keySet().toArray()[tabNo];
-        List<Note> chosenBoardNotes = boardsMap.get(chosenBoard);
+        chosenBoard = boards.get(tabNo);
+        final List<Note> chosenBoardNotes = chosenBoard.getNotes();
 
-        List<String> values = createValues(chosenBoardNotes);
+        final List<String> values = createValues(chosenBoardNotes);
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
+        final ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
         lv.setAdapter(adapter);
         registerForContextMenu(lv);
     }
@@ -248,11 +251,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId()==R.id.tasksListView) {
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-            menu.setHeaderTitle(boardsMap.get(chosenBoard).get(info.position).getTitle());
-            String[] menuItems = getResources().getStringArray(R.array.listview_options);
-            for (int i = 0; i<menuItems.length; i++) {
+        if (v.getId() == R.id.tasksListView) {
+            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            menu.setHeaderTitle(chosenBoard.getName());
+            final String[] menuItems = getResources().getStringArray(R.array.listview_options);
+            for (int i = 0; i < menuItems.length; i++) {
                 menu.add(Menu.NONE, i, i, menuItems[i]);
             }
         }
@@ -276,10 +279,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     public void doStuff(String name, AdapterView.AdapterContextMenuInfo info) {
         if (name.equals("Delete Note")) {
-            String cardId = boardsMap.get(chosenBoard).get(info.position).getId();
-            new RemoveNoteAsyncTask(MainActivity.this, trelloProvider).execute(cardId);
-        } else if (name.equals("Edit Note")) {
-            final String cardId = boardsMap.get(chosenBoard).get(info.position).getId();
+            String cardId = chosenBoard.get(info.position).getId();
+            new RemoveNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId);
+        } /*else if (name.equals("Edit Note")) {
+            final String cardId = chosenBoard.get(info.position).getId();
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             LayoutInflater inflater = getLayoutInflater();
             final EditText newTitle;
@@ -305,19 +308,18 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     });
             // Create the AlertDialog object and return it
             builder.show();
-        }
+        }*/
     }
-
 
     /**
      * Refreshes all tabs in activity.
      */
     private void refreshTabs() {
-        ActionBar ab = getSupportActionBar();
-        int size = boardsMap.size();
+        final ActionBar ab = getSupportActionBar();
+        final int size = boards.size();
         ab.removeAllTabs();
         for (int i = 0; i < size; i++) {
-            ab.addTab(ab.newTab().setText(((Board) boardsMap.keySet().toArray()[i]).getName()).setTabListener(this));
+            ab.addTab(ab.newTab().setText(boards.get(i).getName()).setTabListener(this));
         }
     }
 
@@ -325,7 +327,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
      * Makes a tab navigation bar visible.
      */
     private void showTabsNav() {
-        ActionBar ab = getSupportActionBar();
+        final ActionBar ab = getSupportActionBar();
         if (ab.getNavigationMode() != ActionBar.NAVIGATION_MODE_TABS) {
             ab.setDisplayShowTitleEnabled(false);
             ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -348,14 +350,15 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     public void chooseList(View view) {
         //ChooseListDialog dialog = new ChooseListDialog();
-        Map<String, org.trello4j.model.List> map = ((TrelloProvider) trelloProvider).getLists();
-        ChooseListDialog dialog2 = ChooseListDialog.newInstance(map.keySet().toArray(new String[map.keySet().size()]));
-        dialog2.setItemsMap(((TrelloProvider) trelloProvider).getLists());
-        dialog2.show(getSupportFragmentManager(), "Choose dialog");
+        listByNamesMap.putAll(trelloProvider.getListsMap());
+        listByNamesMap.putAll(todoistProvider.getListsMap());
+        final ChooseListDialog dialog = ChooseListDialog.newInstance(listByNamesMap.keySet().toArray(new String[listByNamesMap.size()]));
+        dialog.appendItemsMap(listByNamesMap);
+        dialog.show(getSupportFragmentManager(), "Choose dialog");
     }
 
-    public void updateBoardsMap(Map<Board, List<Note>> boardsMap) {
-        this.boardsMap = boardsMap;
+    public void updateBoardsMap(List<NoteList> boards) {
+        this.boards.addAll(boards);
     }
 
     private List<String> createValues(List<Note> chosenBoardNotes) {
@@ -365,5 +368,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         }
         return values;
     }
+
 
 }

@@ -18,18 +18,28 @@ public class NoteList {
      */
     private String name;
 
+    private String id;
+
+    private TasksProvider tasksProvider;
+
     /**
      * List of notes.
      */
     private List<Note> notes;
 
-    public NoteList(String name) {
+    public NoteList(String name, String id, TasksProvider provider) {
         this.name = name;
+        this.id = id;
+        this.tasksProvider = provider;
         notes = new LinkedList<Note>();
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public List<Note> getNotes() {
@@ -44,6 +54,16 @@ public class NoteList {
      */
     public boolean add(Note note) {
         return notes.add(note);
+    }
+
+    /**
+     * Appends the specified list of Note to the end of the note list.
+     *
+     * @param notes Note list to be appended to the list of notes.
+     * @return true if appending succeeds
+     */
+    public boolean addAll(List<Note> notes) {
+        return this.notes.addAll(notes);
     }
 
     /**
@@ -155,4 +175,11 @@ public class NoteList {
         return notes.toArray();
     }
 
+    /**
+     * Returns task provider related to this NoteList.
+     * @return an object of task provider related to note list
+     */
+    public TasksProvider getProvider() {
+        return tasksProvider;
+    }
 }

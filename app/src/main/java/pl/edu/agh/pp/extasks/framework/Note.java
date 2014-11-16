@@ -47,5 +47,7 @@ public class Note {
         return date;
     }
 
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
 }

@@ -2,15 +2,16 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.os.AsyncTask;
 
-import org.trello4j.model.Board;
-
 import java.util.List;
-import java.util.Map;
 
+import pl.edu.agh.pp.extasks.framework.InitializationException;
 import pl.edu.agh.pp.extasks.framework.Note;
+import pl.edu.agh.pp.extasks.framework.NoteList;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
-/**AsyncTask which delegates creating connection with a TaskProvider, recieves all the notes and returns them to the ExTasksActivity.
+/**
+ * AsyncTask which delegates creating connection with a TaskProvider, recieves all the notes and returns them to the ExTasksActivity.
+ *
  * @author Jakub Lasisz
  * @author Maciej Sipko
  */
@@ -19,8 +20,8 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
      * Activity which will recieve note lists from provider.
      */
     private MainActivity activity;
-    private java.util.List<Note> noteLists;
-    private Map<Board, List<Note>> boardsMap;
+    private List<Note> noteLists;
+    private List<NoteList> boardsMap;
     /**
      * Task provider which is called to create a connection and return notes.
      */
@@ -38,7 +39,11 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
         //API key: c74be1bc4cc64e0eb21aa8cd68067c11
         //token: 1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a
         provider.authenticate();
-        provider.initialize();
+        try {
+            provider.initialize();
+        } catch (InitializationException e) {
+            e.printStackTrace();
+        }
         provider.getNotesFromService();
         noteLists = provider.getNotes();
         activity.updateNoteList(noteLists);

@@ -6,13 +6,14 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.os.AsyncTask;
 
+import pl.edu.agh.pp.extasks.framework.SynchronizationException;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
 public class RemoveNoteAsyncTask extends AsyncTask<String, String, String> {
 
     private MainActivity activity;
     /**
-     * Task provider which is called to create a connection and return notes.
+     * Task provider which is called to remove specific note.
      */
     private TasksProvider provider;
 
@@ -24,7 +25,11 @@ public class RemoveNoteAsyncTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        provider.removeNote(strings[0]);
+        try {
+            provider.removeNote(strings[0]);
+        } catch (SynchronizationException e) {
+            e.printStackTrace();
+        }
         return "";
     }
 }

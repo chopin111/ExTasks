@@ -67,6 +67,6 @@ public interface TasksProvider {
      * @param cardTitle new title of note
      * @param cardText new text of note
      */
-    void editNote(String cardId, String cardTitle, String cardText);
+    void editNote(String cardId, String cardTitle, String cardText) throws SynchronizationException;
 
 }

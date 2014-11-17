@@ -281,23 +281,19 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         if (name.equals("Delete Note")) {
             String cardId = chosenBoard.get(info.position).getId();
             new RemoveNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId);
-        } /*else if (name.equals("Edit Note")) {
+        } else if (name.equals("Edit Note")) {
             final String cardId = chosenBoard.get(info.position).getId();
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             LayoutInflater inflater = getLayoutInflater();
-            final EditText newTitle;
-            final EditText newText;
-            newTitle = (EditText) findViewById(R.id.noteName);
-            newText = (EditText) findViewById(R.id.noteText);
 
             builder.setView(inflater.inflate(R.layout.dialog_editnote, null))
                     .setMessage("Save note")
-                    .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             EditText editTextName = (EditText) ((Dialog) dialog).findViewById(R.id.editNoteName);
                             EditText editText = (EditText) ((Dialog) dialog).findViewById(R.id.editNoteText);
 
-                            new EditNoteAsyncTask(MainActivity.this, trelloProvider).execute(cardId, editTextName.getText().toString(), editText.getText().toString());
+                            new EditNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId, editTextName.getText().toString(), editText.getText().toString());
                             refreshTextView();
                         }
                     })
@@ -308,7 +304,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     });
             // Create the AlertDialog object and return it
             builder.show();
-        }*/
+        }
     }
 
     /**

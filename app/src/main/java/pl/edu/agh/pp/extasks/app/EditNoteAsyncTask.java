@@ -6,6 +6,7 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.os.AsyncTask;
 
+import pl.edu.agh.pp.extasks.framework.SynchronizationException;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
 public class EditNoteAsyncTask extends AsyncTask<String, String, String> {
@@ -24,7 +25,11 @@ public class EditNoteAsyncTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        provider.editNote(strings[0], strings[1], strings[2]);
+        try{
+            provider.editNote(strings[0], strings[1], strings[2]);
+        } catch (SynchronizationException e) {
+            e.printStackTrace();
+        }
         return "";
     }
 }

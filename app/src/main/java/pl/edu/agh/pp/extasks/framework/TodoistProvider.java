@@ -107,7 +107,16 @@ public class TodoistProvider implements TasksProvider {
     }
 
     @Override
-    public void editNote(String cardId, String cardTitle, String cardText) {
-        //TODO
+    public void editNote(String cardId, String cardTitle, String cardText) throws SynchronizationException {
+        final Item toEditNote = data.getItem(cardId);
+        if (toEditNote == null) {
+            return;
+        }
+        toEditNote.setContent(cardTitle);
+        try {
+            todoistManager.syncAndGetUpdated();
+        } catch (TodoistException e) {
+            throw new SynchronizationException(e);
+        }
     }
 }

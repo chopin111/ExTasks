@@ -130,10 +130,29 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                                 }
                             }).create().show();
             return;
-        }
+        } else {
+            final String listID = chosenListID;
+            new AddNoteAsyncTask(MainActivity.this, chosenProvider).execute(textName, text, listID);
 
-        final String listID = chosenListID;
-        new AddNoteAsyncTask(MainActivity.this, chosenProvider).execute(textName, text, listID);
+            update();
+        }
+    }
+
+    private void update() {
+        try {
+            noteLists = new LinkedList<Note>();
+            boards.clear();
+            String result = new ConnectionAsyncTask(this, trelloProvider).execute().get();
+            new ConnectionAsyncTask(this, todoistProvider).execute().get();
+            if (result != null) {
+                refreshTabs();
+                refreshTextView();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -292,6 +311,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         if (name.equals("Delete Note")) {
             String cardId = chosenBoard.get(info.position).getId();
             new RemoveNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId);
+            update();
         } else if (name.equals("Edit Note")) {
             final String cardId = chosenBoard.get(info.position).getId();
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -318,9 +338,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                                                         return;
                                                     }
                                                 }).create().show();
-                            } else
+                            } else {
                                 new EditNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId, textName, text);
-                            refreshTextView();
+
+                                update();
+                            }
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

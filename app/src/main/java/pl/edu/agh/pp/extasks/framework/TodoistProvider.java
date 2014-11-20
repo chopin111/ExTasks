@@ -54,6 +54,7 @@ public class TodoistProvider implements TasksProvider {
 
     @Override
     public void getNotesFromService() {
+        boards.clear();
         for (Project p : data.getProjects()) {
             if (p.isDeleted() || p.isIs_archived()) {
                 continue;

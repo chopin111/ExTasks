@@ -51,6 +51,7 @@ public class TrelloProvider implements TasksProvider {
     @Override
     public void initialize() throws InitializationException {
         final List<Board> boards = trelloManager.getBoardsByMember(trelloManager.getMemberByToken(token).getId());
+        clear();
         for (Board b : boards) {
             if (b.isClosed()) {
                 continue;
@@ -70,7 +71,6 @@ public class TrelloProvider implements TasksProvider {
             }
             boardsByName.put(b.getName(), b);
         }
-
     }
 
     @Override
@@ -114,5 +114,12 @@ public class TrelloProvider implements TasksProvider {
 
     public void editNote(String cardId, String cardTitle, String cardText) {
         trelloManager.updateCard(cardId, cardTitle, cardText);
+    }
+
+    public void clear() {
+        boards.clear();
+        listByName.clear();
+        boardsByName.clear();
+        noteList.clear();
     }
 }

@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 
-import org.trello4j.model.List;
-
 import java.util.Map;
 import java.util.TreeMap;
 

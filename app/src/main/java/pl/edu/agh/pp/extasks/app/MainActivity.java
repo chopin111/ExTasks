@@ -118,11 +118,29 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         final Dialog dialogView = dialog.getDialog();
-        final EditText editTextName = (EditText) dialogView.findViewById(R.id.noteName);
-        final EditText editText = (EditText) dialogView.findViewById(R.id.noteText);
+        final EditText editTextName = (EditText) (dialogView.findViewById(R.id.noteName));
+        final EditText editText = (EditText) (dialogView.findViewById(R.id.noteText));
+
+        String textName = editTextName.getText() == null ? "" : editTextName.getText().toString();
+        String text = editText.getText() == null ? "" : editText.getText().toString();
+
+        if (chosenListID == null || textName.equals("")) {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("ERROR")
+                    .setMessage("You need to choose list and write note name")
+                    .setCancelable(false)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,
+                                                    int whichButton) {
+                                    return;
+                                }
+                            }).create().show();
+            return;
+        }
 
         final String listID = chosenListID;
-        new AddNoteAsyncTask(MainActivity.this, chosenProvider).execute(editTextName.getText().toString(), editText.getText().toString(), listID);
+        new AddNoteAsyncTask(MainActivity.this, chosenProvider).execute(textName, text, listID);
     }
 
     @Override
@@ -292,8 +310,23 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                         public void onClick(DialogInterface dialog, int id) {
                             EditText editTextName = (EditText) ((Dialog) dialog).findViewById(R.id.editNoteName);
                             EditText editText = (EditText) ((Dialog) dialog).findViewById(R.id.editNoteText);
+                            String textName = editTextName.getText() == null ? "" : editTextName.getText().toString();
+                            String text = editText.getText() == null ? "" : editText.getText().toString();
 
-                            new EditNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId, editTextName.getText().toString(), editText.getText().toString());
+                            if (textName.equals("")) {
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("ERROR")
+                                        .setMessage("You need to write note name")
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int whichButton) {
+                                                        return;
+                                                    }
+                                                }).create().show();
+                            } else
+                                new EditNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId, textName, text);
                             refreshTextView();
                         }
                     })

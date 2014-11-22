@@ -1,12 +1,13 @@
-package pl.edu.agh.pp.extasks.app;
+package pl.edu.agh.pp.extasks.app.asynctasks;
 
 import android.os.AsyncTask;
 
 import java.util.List;
 
-import pl.edu.agh.pp.extasks.framework.InitializationException;
-import pl.edu.agh.pp.extasks.framework.Note;
-import pl.edu.agh.pp.extasks.framework.NoteList;
+import pl.edu.agh.pp.extasks.app.MainActivity;
+import pl.edu.agh.pp.extasks.framework.exception.InitializationException;
+import pl.edu.agh.pp.extasks.framework.model.Note;
+import pl.edu.agh.pp.extasks.framework.model.NoteList;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
 /**
@@ -20,8 +21,6 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
      * Activity which will recieve note lists from provider.
      */
     private MainActivity activity;
-    private List<Note> noteLists;
-    private List<NoteList> boardsMap;
     /**
      * Task provider which is called to create a connection and return notes.
      */
@@ -45,9 +44,9 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
             e.printStackTrace();
         }
         provider.getNotesFromService();
-        noteLists = provider.getNotes();
+        List<Note> noteLists = provider.getNotes();
         activity.updateNoteList(noteLists);
-        boardsMap = provider.getBoards();
+        List<NoteList> boardsMap = provider.getBoards();
         activity.updateBoardsMap(boardsMap);
 
         return "";

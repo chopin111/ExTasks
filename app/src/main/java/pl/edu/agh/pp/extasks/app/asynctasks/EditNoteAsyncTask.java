@@ -1,11 +1,16 @@
-package pl.edu.agh.pp.extasks.app;
+package pl.edu.agh.pp.extasks.app.asynctasks;
+
+/**
+ * Created by chopi_000 on 2014-11-15.
+ */
 
 import android.os.AsyncTask;
 
-import pl.edu.agh.pp.extasks.framework.SynchronizationException;
+import pl.edu.agh.pp.extasks.app.MainActivity;
+import pl.edu.agh.pp.extasks.framework.exception.SynchronizationException;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
-public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
+public class EditNoteAsyncTask extends AsyncTask<String, String, String> {
 
     private MainActivity activity;
     /**
@@ -13,7 +18,7 @@ public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
      */
     private TasksProvider provider;
 
-    public AddNoteAsyncTask(MainActivity activity, TasksProvider provider) {
+    public EditNoteAsyncTask(MainActivity activity, TasksProvider provider) {
         super();
         this.activity = activity;
         this.provider = provider;
@@ -21,8 +26,8 @@ public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        try {
-            provider.addNote(strings[0], strings[1], strings[2]);
+        try{
+            provider.editNote(strings[0], strings[1], strings[2]);
         } catch (SynchronizationException e) {
             e.printStackTrace();
         }

@@ -53,8 +53,6 @@ android {
 
 dependencies {
     compile 'com.google.android.gms:play-services:4.4.52'
-//    compile 'com.google.code.gson:gson:2.2.4'
-//    compile 'org.trello4j:trello4j:1.0-SNAPSHOT'
     compile files('libs/trello4j.jar')
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     provided 'com.android.support:support-v4:19.1.0'

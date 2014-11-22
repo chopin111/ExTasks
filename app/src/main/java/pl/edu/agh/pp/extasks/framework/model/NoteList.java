@@ -1,9 +1,11 @@
-package pl.edu.agh.pp.extasks.framework;
+package pl.edu.agh.pp.extasks.framework.model;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import pl.edu.agh.pp.extasks.framework.TasksProvider;
 
 /**
  * List of notes model for Extasks application.

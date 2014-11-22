@@ -11,6 +11,10 @@ import nl.rgonline.lib.todoist.Project;
 import nl.rgonline.lib.todoist.TodoistApi;
 import nl.rgonline.lib.todoist.TodoistData;
 import nl.rgonline.lib.todoist.TodoistException;
+import pl.edu.agh.pp.extasks.framework.exception.InitializationException;
+import pl.edu.agh.pp.extasks.framework.exception.SynchronizationException;
+import pl.edu.agh.pp.extasks.framework.model.Note;
+import pl.edu.agh.pp.extasks.framework.model.NoteList;
 
 /**
  * Implementation of a provider for Todoist communication

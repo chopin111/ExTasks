@@ -11,6 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import pl.edu.agh.pp.extasks.framework.exception.InitializationException;
+import pl.edu.agh.pp.extasks.framework.model.Note;
+import pl.edu.agh.pp.extasks.framework.model.NoteList;
+
 /**
  * Implementation of a provider for Trello communication
  *
@@ -59,11 +63,10 @@ public class TrelloProvider implements TasksProvider {
             final List<org.trello4j.model.List> listOfLists = trelloManager.getListByBoard(b.getId());
             final List<Card> currentBoardCards = trelloManager.getCardsByBoard(b.getId());
             final List<Note> currentBoardNotes = new ArrayList<>();
-            for (Card card : currentBoardCards) {
-                currentBoardNotes.add(new Note(card.getName(), card.getDesc(), "", card.getId()));
-            }
             final NoteList board = new NoteList(b.getName(), b.getId(), this);
-            board.addAll(currentBoardNotes);
+            for (Card card : currentBoardCards) {
+                board.add(new Note(card.getName(), card.getDesc(), "", card.getId()));
+            }
             this.boards.add(board);
             for (org.trello4j.model.List l : listOfLists) {
                 final NoteList list = new NoteList(l.getName(), l.getId(), this);

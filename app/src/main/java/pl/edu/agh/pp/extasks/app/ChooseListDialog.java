@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import java.util.Map;
 import java.util.TreeMap;
 
-import pl.edu.agh.pp.extasks.framework.NoteList;
+import pl.edu.agh.pp.extasks.framework.model.NoteList;
 
 
 /**

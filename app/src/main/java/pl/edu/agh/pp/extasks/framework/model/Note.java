@@ -1,4 +1,4 @@
-package pl.edu.agh.pp.extasks.framework;
+package pl.edu.agh.pp.extasks.framework.model;
 
 /**
  * Note model for ExTasks application.

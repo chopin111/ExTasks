@@ -3,6 +3,11 @@ package pl.edu.agh.pp.extasks.framework;
 import java.util.List;
 import java.util.Map;
 
+import pl.edu.agh.pp.extasks.framework.exception.InitializationException;
+import pl.edu.agh.pp.extasks.framework.exception.SynchronizationException;
+import pl.edu.agh.pp.extasks.framework.model.Note;
+import pl.edu.agh.pp.extasks.framework.model.NoteList;
+
 /**
  * Common interface for all different providers.
  *

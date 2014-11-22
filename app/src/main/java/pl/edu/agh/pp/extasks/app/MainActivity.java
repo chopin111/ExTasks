@@ -31,11 +31,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
-import pl.edu.agh.pp.extasks.framework.Note;
-import pl.edu.agh.pp.extasks.framework.NoteList;
+import pl.edu.agh.pp.extasks.app.asynctasks.AddNoteAsyncTask;
+import pl.edu.agh.pp.extasks.app.asynctasks.ConnectionAsyncTask;
+import pl.edu.agh.pp.extasks.app.asynctasks.EditNoteAsyncTask;
+import pl.edu.agh.pp.extasks.app.asynctasks.RemoveNoteAsyncTask;
 import pl.edu.agh.pp.extasks.framework.TasksProvider;
 import pl.edu.agh.pp.extasks.framework.TodoistProvider;
 import pl.edu.agh.pp.extasks.framework.TrelloProvider;
+import pl.edu.agh.pp.extasks.framework.model.Note;
+import pl.edu.agh.pp.extasks.framework.model.NoteList;
 
 /**
  * Main activity of ExTasks application. It allows to connect to specified services and recieve notes from them.
@@ -304,10 +308,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         int menuItemIndex = item.getItemId();
         String[] menuItems = getResources().getStringArray(R.array.listview_options);
         String name = menuItems[menuItemIndex];
-        doStuff(name, info);
+        performActionOnNote(name, info);
     }
 
-    public void doStuff(String name, AdapterView.AdapterContextMenuInfo info) {
+    public void performActionOnNote(String name, AdapterView.AdapterContextMenuInfo info) {
         if (name.equals("Delete Note")) {
             String cardId = chosenBoard.get(info.position).getId();
             new RemoveNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId);
@@ -335,7 +339,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                                                 new DialogInterface.OnClickListener() {
                                                     public void onClick(DialogInterface dialog,
                                                                         int whichButton) {
-                                                        return;
                                                     }
                                                 }).create().show();
                             } else {

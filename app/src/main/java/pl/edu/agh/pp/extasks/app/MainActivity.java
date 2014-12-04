@@ -2,10 +2,13 @@ package pl.edu.agh.pp.extasks.app;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
@@ -16,8 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -63,6 +68,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private String chosenListID;
     private NoteList chosenBoard;
 
+    private transient final String trelloAppKey = "074f718830c8c5855fadfc28c2c5ffd6";
+    private transient final String trelloAppSecret = "fa80fe8edab1f9a9e0d7030b15ed216c4d6ec174dd8e6efb9fd6a496b6d663b3";
     /**
      * Updates the current note list, used by ConnectionAsyncTask class.
      *
@@ -81,12 +88,23 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
         // default to tab navigation
         showTabsNav();
-        final ListView lv = (ListView) findViewById(R.id.tasksListView);
 
-        final String[] values = {"Press refresh to update lists"};
+        checkProviders();
 
-        final ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
-        lv.setAdapter(adapter);
+    }
+
+    private void checkProviders() {
+        if (trelloProvider == null && todoistProvider == null) {
+            final ListView lv = (ListView) findViewById(R.id.tasksListView);
+            final String[] values = {"Press login to get your lists"};
+/*            findViewById(R.id.menu_login_todoist).setVisibility(View.VISIBLE);
+            findViewById(R.id.menu_login_trello).setVisibility(View.VISIBLE);*/
+            final ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
+            lv.setAdapter(adapter);
+        } else
+        {
+            update();
+        }
     }
 
     private void setupActionBar(ActionBar ab) {
@@ -219,14 +237,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 // switch to a progress animation
                 if (isOnline()) {
                     item.setActionView(R.layout.indeterminate_progress_action);
-                    String value;
+                    String value = "nope";
                     try {
                         noteLists = new LinkedList<Note>();
                         boards.clear();
-                        trelloProvider = new TrelloProvider("c74be1bc4cc64e0eb21aa8cd68067c11", "1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
-                        todoistProvider = new TodoistProvider("jakublasisz@gmail.com", "iamalazybastard");
-                        value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
-                        new ConnectionAsyncTask(this, todoistProvider).execute().get();
+
+                        if (trelloProvider != null) {
+                            value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
+                        }
+                        if (todoistProvider != null) {
+                            value = new ConnectionAsyncTask(this, todoistProvider).execute().get();
+                        }
                     } catch (InterruptedException e) {
                         Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
                         return false;
@@ -234,7 +255,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                         Log.e(TAG, "ExecutionException at onOptionsItemSelected", e);
                         return false;
                     }
-                    if (value != null) {
+                    if (!value.equals("nope")) {
                         refreshTabs();
                         refreshTextView();
                         return true;
@@ -253,9 +274,90 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                                         }
                                     }).create();
                 }
+            case R.id.menu_login_trello: {
+                loginTrello();
+                return true;
+            }
+            case R.id.menu_login_todoist: {
+                loginTodoist();
+                if (todoistProvider != null) {
+                    findViewById(R.id.menu_login_todoist).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.menu_refresh).performClick();
+                    return true;
+                }
+                return false;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void loginTrello() {
+        String trelloToken = trelloOauth();
+        trelloProvider = new TrelloProvider("074f718830c8c5855fadfc28c2c5ffd6", trelloToken);//"c74be1bc4cc64e0eb21aa8cd68067c11/////1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+        if (trelloProvider != null) {
+            findViewById(R.id.menu_login_trello).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void loginTodoist() {
+        final Dialog login = new Dialog(this);
+        // Set GUI of login screen
+        login.setContentView(R.layout.login_dialog);
+        login.setTitle("Login to Todoist");
+
+        // Init button of login GUI
+        Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+        Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+        final EditText txtUsername = (EditText)login.findViewById(R.id.txtUsername);
+        final EditText txtPassword = (EditText)login.findViewById(R.id.txtPassword);
+
+        // Attached listener for login GUI button
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(txtUsername.getText().toString().trim().length() > 0 && txtPassword.getText().toString().trim().length() > 0)
+                {
+                    todoistProvider = new TodoistProvider(txtUsername.getText().toString(), txtPassword.getText().toString()); //("jakublasisz@gmail.com", "iamalazybastard");
+                    // Validate Your login credential here than display message
+                    Toast.makeText(MainActivity.this,
+                            "Login Sucessfull", Toast.LENGTH_LONG).show();
+
+                    // Redirect to dashboard / home screen.
+                    login.dismiss();
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this,
+                            "Please enter Username and Password", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login.dismiss();
+            }
+        });
+
+        // Make dialog box visible.
+        login.show();
+    }
+
+
+    private String trelloOauth() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://trello.com/1/authorize?key=074f718830c8c5855fadfc28c2c5ffd6&name=My+Application&expiration=1day&response_type=token&scope=read,write"));
+        startActivity(browserIntent);
+
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+    // Checks to see if the clip item contains an Intent, by testing to see if getIntent() returns null
+        String pasteIntent = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+
+        while (pasteIntent == null || pasteIntent.isEmpty() || pasteIntent.length() != 64)
+            pasteIntent = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+
+        return pasteIntent;
     }
 
     /**

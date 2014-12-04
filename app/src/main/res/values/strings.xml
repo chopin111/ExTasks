@@ -37,4 +37,6 @@
     <string name="noteName">Note Name</string>
     <string name="text">Text</string>
     <string name="save">Save</string>
+    <string name="login">Login</string>
+
 </resources>

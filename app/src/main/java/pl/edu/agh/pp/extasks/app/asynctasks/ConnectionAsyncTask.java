@@ -42,6 +42,7 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
             authenticate();
         } catch (InitializationException e) {
             e.printStackTrace();
+            return e.getMessage();
         }
         List<Note> noteLists = provider.getNotes();
         activity.updateNoteList(noteLists);

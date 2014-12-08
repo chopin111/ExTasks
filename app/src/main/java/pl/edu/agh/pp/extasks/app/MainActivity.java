@@ -166,6 +166,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
             }
             if (todoistProvider != null) {
                 result = new ConnectionAsyncTask(this, todoistProvider).execute().get();
+                if (!result.equals("")) {
+                    throw new ExecutionException(new Throwable(result));
+                }
             }
             //return result != null;
         } catch (InterruptedException e) {

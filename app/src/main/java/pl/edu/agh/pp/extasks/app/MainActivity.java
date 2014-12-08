@@ -368,10 +368,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
     // Checks to see if the clip item contains an Intent, by testing to see if getIntent() returns null
-        String pasteIntent = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
-
-        while (pasteIntent == null || pasteIntent.isEmpty() || pasteIntent.length() != 64)
+        String pasteIntent = "";
+        if (clipboard.getPrimaryClip() != null) {
             pasteIntent = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+        }
+
+        while (pasteIntent == null || pasteIntent.isEmpty() || pasteIntent.length() != 64) {
+            if (clipboard.getPrimaryClip() != null) {
+                pasteIntent = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+            } else
+                pasteIntent = "";
+        }
 
         return pasteIntent;
     }

@@ -279,12 +279,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
             }
             case R.id.menu_login_todoist: {
                 loginTodoist();
-                if (todoistProvider != null) {
-                    findViewById(R.id.menu_login_todoist).setVisibility(View.INVISIBLE);
-                    findViewById(R.id.menu_refresh).performClick();
-                    return true;
-                }
-                return false;
+                return true;
             }
             case R.id.menu_choose_tabs: {
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(

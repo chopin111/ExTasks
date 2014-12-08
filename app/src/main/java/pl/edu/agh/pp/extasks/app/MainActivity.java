@@ -163,6 +163,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
             String result = "";
             if (trelloProvider != null) {
                 result = new ConnectionAsyncTask(this, trelloProvider).execute().get();
+                if (!result.equals("")) {
+                    throw new ExecutionException(new Throwable(result));
+                }
             }
             if (todoistProvider != null) {
                 result = new ConnectionAsyncTask(this, todoistProvider).execute().get();
@@ -170,15 +173,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                     throw new ExecutionException(new Throwable(result));
                 }
             }
-            //return result != null;
         } catch (InterruptedException e) {
             e.printStackTrace();
-            //return false;
         } catch (ExecutionException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this,
                     "Authentication error", Toast.LENGTH_LONG).show();
-            //return false;
         }
     }
 

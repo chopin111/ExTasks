@@ -66,6 +66,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     private TasksProvider chosenProvider;
     private String chosenListID;
     private NoteList chosenBoard;
+    private String trelloToken;
 
     private transient final String trelloAppKey = "074f718830c8c5855fadfc28c2c5ffd6";
     private transient final String trelloAppSecret = "fa80fe8edab1f9a9e0d7030b15ed216c4d6ec174dd8e6efb9fd6a496b6d663b3";
@@ -236,33 +237,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                // switch to a progress animation
                 if (isOnline()) {
                     item.setActionView(R.layout.indeterminate_progress_action);
-                    String value = "nope";
-                    try {
-                        noteLists = new LinkedList<>();
-                        boards.clear();
-
-                        if (trelloProvider != null) {
-                            value = new ConnectionAsyncTask(this, trelloProvider).execute().get();
-                        }
-                        if (todoistProvider != null) {
-                            value = new ConnectionAsyncTask(this, todoistProvider).execute().get();
-                        }
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "InterruptedException at onOptionsItemSelected", e);
-                        return false;
-                    } catch (ExecutionException e) {
-                        Log.e(TAG, "ExecutionException at onOptionsItemSelected", e);
-                        return false;
-                    }
-                    if (!value.equals("nope")) {
-                        refreshTabs();
-                        refreshTextView();
-                        return true;
-                    } else
-                        return false;
+                    update();
                 } else {
                     new AlertDialog.Builder(MainActivity.this.getApplicationContext())
                             .setTitle("INTERNET CONNECTION ERROR")
@@ -274,7 +251,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                                                             int whichButton) {
                                             finish();
                                         }
-                                    }).create();
+                                    }).show();
                 }
             case R.id.menu_login_trello: {
                 loginTrello();
@@ -319,8 +296,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 
     private void loginTrello() {
-        String trelloToken = trelloOauth();
-        trelloProvider = new TrelloProvider("074f718830c8c5855fadfc28c2c5ffd6", trelloToken);//"c74be1bc4cc64e0eb21aa8cd68067c11/////1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+        if (trelloProvider == null) {
+            if (trelloToken == null || trelloToken.equals("")) {
+                trelloToken = trelloOauth();
+            }
+            trelloProvider = new TrelloProvider("074f718830c8c5855fadfc28c2c5ffd6", trelloToken);//"c74be1bc4cc64e0eb21aa8cd68067c11/////1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+        }
         update();
     }
 

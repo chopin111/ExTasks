@@ -297,9 +297,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     private void loginTrello() {
         if (trelloProvider == null) {
-            if (trelloToken == null || trelloToken.equals("")) {
-                trelloToken = trelloOauth();
-            }
+            //if (trelloToken == null || trelloToken.equals("")) {
+            trelloToken = trelloOauth();
+            //}
             trelloProvider = new TrelloProvider("074f718830c8c5855fadfc28c2c5ffd6", trelloToken);//"c74be1bc4cc64e0eb21aa8cd68067c11/////1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
         }
         update();

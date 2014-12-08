@@ -3,6 +3,7 @@ package pl.edu.agh.pp.extasks.app.asynctasks;
 import android.os.AsyncTask;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pl.edu.agh.pp.extasks.app.MainActivity;
 import pl.edu.agh.pp.extasks.framework.exception.InitializationException;
@@ -37,13 +38,11 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
         //trello
         //API key: c74be1bc4cc64e0eb21aa8cd68067c11
         //token: 1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a
-        provider.authenticate();
-        try {
-            provider.initialize();
+        try{
+            authenticate();
         } catch (InitializationException e) {
             e.printStackTrace();
         }
-        provider.getNotesFromService();
         List<Note> noteLists = provider.getNotes();
         activity.updateNoteList(noteLists);
         List<NoteList> boardsMap = provider.getBoards();
@@ -52,4 +51,9 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
         return "";
     }
 
+    private void authenticate() throws InitializationException{
+        provider.authenticate();
+        provider.initialize();
+        provider.getNotesFromService();
+    }
 }

@@ -46,6 +46,9 @@ public class TodoistProvider implements TasksProvider {
         try {
             todoistManager.syncAndGetUpdated();
             data = todoistManager.get();
+            if (data == null) {
+                throw new TodoistException("Authentication error");
+            }
         } catch (TodoistException e) {
             throw new InitializationException(e);
         }

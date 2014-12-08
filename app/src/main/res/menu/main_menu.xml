@@ -4,6 +4,12 @@
 
     <!-- icon -->
     <item
+        android:id="@+id/menu_choose_tabs"
+        android:showAsAction="always"
+        android:title="Choose tabs"
+        android:icon="@drawable/plus"
+        />
+    <item
         android:id="@+id/menu_login_trello"
         android:showAsAction="ifRoom"
         android:title="Login Trello"

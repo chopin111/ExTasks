@@ -275,7 +275,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                             }
                         });
                 final CharSequence[] allTabs = getAllTabs();
-                builderSingle.setMultiChoiceItems(allTabs, new boolean[allTabs.length],
+                boolean[] selectedTabs = getSelectedTabs(allTabs);
+
+                builderSingle.setMultiChoiceItems(allTabs, selectedTabs,
                         new DialogInterface.OnMultiChoiceClickListener() {
 
                             @Override
@@ -293,6 +295,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private boolean[] getSelectedTabs(CharSequence[] allTabs) {
+        boolean[] selectedTabs = new boolean[allTabs.length];
+        for (int i = 0; i < allTabs.length; i++) {
+            if (tabs.contains(allTabs[i])) {
+                selectedTabs[i] = true;
+            } else
+                selectedTabs[i] = false;
+        }
+        return selectedTabs;
     }
 
     private void loginTrello() {
@@ -360,7 +373,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
             } else
                 pasteIntent = "";
         }
-
         return pasteIntent;
     }
 

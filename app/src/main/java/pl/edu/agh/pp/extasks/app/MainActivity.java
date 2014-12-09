@@ -518,8 +518,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     public void chooseList(View view) {
         //ChooseListDialog dialog = new ChooseListDialog();
-        listByNamesMap.putAll(trelloProvider.getListsMap());
-        listByNamesMap.putAll(todoistProvider.getListsMap());
+        if (trelloProvider != null) {
+            listByNamesMap.putAll(trelloProvider.getListsMap());
+        }
+        if (todoistProvider != null) {
+            listByNamesMap.putAll(todoistProvider.getListsMap());
+        }
         final ChooseListDialog dialog = ChooseListDialog.newInstance(listByNamesMap.keySet().toArray(new String[listByNamesMap.size()]));
         dialog.appendItemsMap(listByNamesMap);
         dialog.show(getSupportFragmentManager(), "Choose dialog");

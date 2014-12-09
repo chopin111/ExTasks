@@ -339,7 +339,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 if (txtUsername.getText().toString().trim().length() > 0 && txtPassword.getText().toString().trim().length() > 0) {
                     todoistProvider = new TodoistProvider(txtUsername.getText().toString(), txtPassword.getText().toString()); //("jakublasisz@gmail.com", "iamalazybastard");
                     update();
-                    Toast.makeText(MainActivity.this, "Login Sucessfull", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Login Successfull", Toast.LENGTH_LONG).show();
                     login.dismiss();
                 } else {
                     Toast.makeText(MainActivity.this, "Please enter Username and Password", Toast.LENGTH_LONG).show();

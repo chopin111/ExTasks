@@ -390,7 +390,13 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 tabNo = tab.getPosition();
             }
         }
-        chosenBoard = boards.get(tabNo);
+        chosenBoard = boards.get(0);
+        for (NoteList board : boards) {
+            if (board.getName().equals(tabs.get(tabNo))) {
+                chosenBoard = board;
+                break;
+            }
+        }
         final List<Note> chosenBoardNotes = chosenBoard.getNotes();
 
         final List<String> values = createValues(chosenBoardNotes);

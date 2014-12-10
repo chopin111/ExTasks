@@ -12,6 +12,10 @@ public class ConnectionDetector {
         this.context = context;
     }
 
+    /**
+     * Checks internet connection state
+     * @return true if connected to internet, else false
+     */
     public boolean isConnectingToInternet() {
         ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity == null) {

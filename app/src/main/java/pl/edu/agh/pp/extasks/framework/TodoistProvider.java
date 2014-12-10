@@ -31,6 +31,11 @@ public class TodoistProvider implements TasksProvider {
     private List<NoteList> boards = new ArrayList<>();
     private Map<String, NoteList> listsByName = new TreeMap<>();
 
+    /**
+     * Todoist provider constructor
+     * @param login user login from Todoist
+     * @param password user password from Todoist
+     */
     public TodoistProvider(String login, String password) {
         this.login = login;
         this.password = password;

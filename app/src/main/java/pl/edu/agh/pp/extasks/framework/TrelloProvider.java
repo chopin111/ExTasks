@@ -115,10 +115,19 @@ public class TrelloProvider implements TasksProvider {
         return listByName;
     }
 
+    /**
+     * Edits specified note
+     * @param cardId ID of note to be edited
+     * @param cardTitle new title of note
+     * @param cardText new text of note
+     */
     public void editNote(String cardId, String cardTitle, String cardText) {
         trelloManager.updateCard(cardId, cardTitle, cardText);
     }
 
+    /**
+     * Clears all data in Trello provider
+     */
     public void clear() {
         boards.clear();
         listByName.clear();

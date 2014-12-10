@@ -90,6 +90,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
     }
 
+    /**
+     * Checks if any of providers is logged in
+     */
     private void checkProviders() {
         if (trelloProvider == null && todoistProvider == null) {
             final ListView lv = (ListView) findViewById(R.id.tasksListView);
@@ -106,18 +109,15 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 
     private void setupActionBar(ActionBar ab) {
-        // set defaults for logo & home up
         boolean showHomeUp = false;
         ab.setDisplayHomeAsUpEnabled(showHomeUp);
         boolean useLogo = false;
         ab.setDisplayUseLogoEnabled(useLogo);
 
-        // set up tabs nav
         if (noteLists.size() == 0) {
             ab.addTab(ab.newTab().setText("Empty tab").setTabListener(this));
         }
 
-        // set up list nav
         ab.setListNavigationCallbacks(ArrayAdapter
                         .createFromResource(this, R.array.sections,
                                 R.layout.sherlock_spinner_dropdown_item),
@@ -162,6 +162,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         }
     }
 
+    /**
+     * Performes update for logged in providers
+     */
     private void update() {
         if (!connectionDetector.isConnectingToInternet()) {
             showAlertDialog(MainActivity.this, "No Internet Access", "You don't have access to Internet");
@@ -207,12 +210,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.main_menu, menu);
 
-        // set up a listener for the refresh item
         final MenuItem refresh = menu.findItem(R.id.menu_refresh);
         refresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             // on selecting show progress spinner for 1s
             public boolean onMenuItemClick(MenuItem item) {
-                // item.setActionView(R.layout.progress_action);
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         refresh.setActionView(null);
@@ -246,6 +247,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                 if (connectionDetector.isConnectingToInternet()) {
                     item.setActionView(R.layout.indeterminate_progress_action);
                     update();
+                    return true;
                 } else {
                     showAlertDialog(MainActivity.this, "No Internet Access", "You don't have access to Internet");
                     return false;
@@ -277,6 +279,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 refreshTabs();
+                                refreshTextView();
                             }
                         });
                 final CharSequence[] allTabs = getAllTabs();
@@ -302,6 +305,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         }
     }
 
+    /**
+     * Returnes tabs which were selected from dialog
+     * @param allTabs CharSequence array containing all tab names
+     * @return boolean array telling which tabs were selected
+     */
     private boolean[] getSelectedTabs(CharSequence[] allTabs) {
         boolean[] selectedTabs = new boolean[allTabs.length];
         for (int i = 0; i < allTabs.length; i++) {
@@ -313,16 +321,32 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         return selectedTabs;
     }
 
+    /**
+     * Creates Trello login popup
+     */
     private void loginTrello() {
         if (trelloProvider == null) {
-            //if (trelloToken == null || trelloToken.equals("")) {
-            trelloToken = trelloOauth();
-            //}
-            trelloProvider = new TrelloProvider(TRELLO_APP_KEY, trelloToken);//"c74be1bc4cc64e0eb21aa8cd68067c11/////1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("INFO")
+                    .setMessage("Please copy token from the browser.")
+                    .setCancelable(true)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,
+                                                    int whichButton) {
+                                    dialog.dismiss();
+                                    trelloToken = trelloOauth();
+                                    trelloProvider = new TrelloProvider("074f718830c8c5855fadfc28c2c5ffd6", trelloToken);//"c74be1bc4cc64e0eb21aa8cd68067c11/////1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a");
+                                    update();
+                                }
+                            }).create().show();
         }
         update();
     }
 
+    /**
+     * Todoist authorization - creates dialog for login and password
+     */
     private void loginTodoist() {
         final Dialog login = new Dialog(this);
         login.setContentView(R.layout.login_dialog);
@@ -355,13 +379,15 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         login.show();
     }
 
-
+    /**
+     * Trello authorization for getting token
+     * @return token obtained from browser
+     */
     private String trelloOauth() {
         final String url = String.format("https://trello.com/1/authorize?key=%s&name=ExTasks&expiration=never&response_type=token&scope=read,write", TRELLO_APP_KEY);
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        // Checks to see if the clip item contains an Intent, by testing to see if getIntent() returns null
         String pasteIntent = "";
         if (clipboard.getPrimaryClip() != null) {
             pasteIntent = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
@@ -433,11 +459,16 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         performActionOnNote(name, info);
     }
 
+    /**
+     * Performes actions on long click on notes
+     */
     public void performActionOnNote(String name, AdapterView.AdapterContextMenuInfo info) {
         if (name.equals("Delete Note")) {
             String cardId = chosenBoard.get(info.position).getId();
             new RemoveNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId);
             update();
+            refreshTabs();
+            refreshTextView();
         } else if (name.equals("Edit Note")) {
             final String cardId = chosenBoard.get(info.position).getId();
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -466,6 +497,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                             } else {
                                 new EditNoteAsyncTask(MainActivity.this, chosenBoard.getProvider()).execute(cardId, textName, text);
                                 update();
+                                refreshTabs();
+                                refreshTextView();
                             }
                         }
                     })
@@ -474,7 +507,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
                             dialog.dismiss();
                         }
                     });
-            // Create the AlertDialog object and return it
             builder.show();
         }
     }
@@ -491,6 +523,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         }
     }
 
+    /**
+     * Gets all lists currently loaded from providers
+     * @return CharSequence array containing all tab names
+     */
     private CharSequence[] getAllTabs() {
         CharSequence[] result = new CharSequence[boards.size()];
         for (int i = 0; i < boards.size(); i++) {
@@ -522,8 +558,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
     }
 
+    /**
+     * Creates dialog to choose list
+     */
     public void chooseList(View view) {
-        //ChooseListDialog dialog = new ChooseListDialog();
         if (trelloProvider != null) {
             listByNamesMap.putAll(trelloProvider.getListsMap());
         }
@@ -539,6 +577,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         this.boards.addAll(boards);
     }
 
+    /**
+     * Creates list of notes titles for given list of Note objects
+     * @param chosenBoardNotes list of Note objects
+     * @return list of Strings containing notes titles
+     */
     private List<String> createValues(List<Note> chosenBoardNotes) {
         List<String> values = new ArrayList<>(chosenBoardNotes.size());
         for (Note n : chosenBoardNotes) {
@@ -547,6 +590,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
         return values;
     }
 
+    /**
+     * Displays alert dialog
+     * @param context dialog context
+     * @param title dialog title
+     * @param message message content
+     */
     public void showAlertDialog(Context context, String title, String message) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);

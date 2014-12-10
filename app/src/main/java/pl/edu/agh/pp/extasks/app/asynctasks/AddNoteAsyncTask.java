@@ -14,6 +14,11 @@ public class AddNoteAsyncTask extends AsyncTask<String, String, String> {
      */
     private TasksProvider provider;
 
+    /**
+     * Adding notes to given provider
+     * @param activity   source activity
+     * @param provider   provider
+     */
     public AddNoteAsyncTask(MainActivity activity, TasksProvider provider) {
         super();
         this.activity = activity;

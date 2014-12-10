@@ -27,6 +27,11 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
      */
     private TasksProvider provider;
 
+    /**
+     * Connection async task for given provider
+     * @param activity   source activity
+     * @param provider   provider
+     */
     public ConnectionAsyncTask(MainActivity activity, TasksProvider provider) {
         super();
         this.activity = activity;
@@ -35,9 +40,6 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        //trello
-        //API key: c74be1bc4cc64e0eb21aa8cd68067c11
-        //token: 1cebce0d98eb0fc5a8fda7fecd5725aa500bcdb35edf7915d46453b8c7d38f3a
         try{
             authenticate();
         } catch (InitializationException e) {
@@ -52,6 +54,9 @@ public class ConnectionAsyncTask extends AsyncTask<String, String, String> {
         return "";
     }
 
+    /**
+     * Performs authentication for current provider
+     */
     private void authenticate() throws InitializationException{
         provider.authenticate();
         provider.initialize();
